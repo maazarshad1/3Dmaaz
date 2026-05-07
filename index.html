@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Maaz — Order & Checkout</title>
+  <title>Maaz — Wishlist & Orders</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -22,29 +22,27 @@
     .page.active { display: block; opacity: 1; animation: pageFadeIn 0.5s forwards; }
     @keyframes pageFadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     .product-card { transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1); background: rgba(20,20,20,0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.15); position: relative; overflow: hidden; cursor: pointer; }
-    .product-card:hover { transform: translateY(-12px) scale(1.02); background: rgba(30,30,30,0.9); box-shadow: 0 30px 40px -20px rgba(0,0,0,0.5); border-color: rgba(255,255,255,0.3); }
+    .product-card:hover { transform: translateY(-8px); background: rgba(30,30,30,0.9); box-shadow: 0 30px 40px -20px rgba(0,0,0,0.5); border-color: rgba(255,255,255,0.3); }
     .card-image { width: 100%; height: 200px; object-fit: cover; border-radius: 1rem; margin-bottom: 1rem; }
-    .card-icon { transition: transform 0.4s ease; color: rgba(255,255,255,0.7); font-size: 4rem; text-align: center; margin-bottom: 1rem; }
-    .product-card:hover .card-icon { transform: scale(1.08); }
-    .best-seller-badge { position: absolute; top: 16px; right: 16px; background: #f5a623; color: #000; font-size: 0.7rem; font-weight: bold; padding: 4px 10px; border-radius: 20px; z-index: 2; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+    .best-seller-badge { position: absolute; top: 16px; right: 16px; background: #f5a623; color: #000; font-size: 0.7rem; font-weight: bold; padding: 4px 10px; border-radius: 20px; z-index: 2; }
     .nav-link { position: relative; padding-bottom: 4px; cursor: none; color: rgba(255,255,255,0.8); }
     .nav-link::after { content: ''; position: absolute; width: 0%; height: 2px; bottom: 0; left: 0; background-color: white; transition: width 0.3s ease; }
     .nav-link:hover::after, .nav-link.active::after { width: 100%; }
     .mobile-menu { display: none; flex-direction: column; background: rgba(0,0,0,0.95); backdrop-filter: blur(12px); position: absolute; top: 70px; left: 0; width: 100%; padding: 1.5rem; gap: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.1); z-index: 50; }
     .modal, .checkout-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 10001; justify-content: center; align-items: center; }
-    .modal-content, .checkout-content { background: #111; color: white; max-width: 520px; width: 90%; border-radius: 32px; padding: 2rem; border: 1px solid rgba(255,255,255,0.2); animation: modalPop 0.3s ease; }
+    .modal-content, .checkout-content, .wishlist-content, .orders-content { background: #111; color: white; max-width: 560px; width: 90%; border-radius: 32px; padding: 2rem; border: 1px solid rgba(255,255,255,0.2); animation: modalPop 0.3s ease; max-height: 80vh; overflow-y: auto; }
     @keyframes modalPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     .close-modal, .close-checkout { position: absolute; top: 20px; right: 24px; font-size: 28px; cursor: pointer; color: white; transition: transform 0.2s; }
     .close-modal:hover, .close-checkout:hover { transform: scale(1.1); }
     input, textarea, select { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 1rem; padding: 0.75rem 1rem; width: 100%; transition: all 0.2s; margin-bottom: 1rem; }
-    input:focus, textarea:focus, select:focus { outline: none; border-color: #3a86ff; background: rgba(255,255,255,0.15); }
     button { transition: all 0.2s; cursor: pointer; }
-    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; }
-    .order-btn { background: linear-gradient(135deg, #3a86ff, #8338ec); border: none; color: white; padding: 0.5rem 1rem; border-radius: 40px; font-size: 0.8rem; font-weight: 500; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-    .order-btn:hover { transform: scale(1.05); background: linear-gradient(135deg, #4a96ff, #9348fc); box-shadow: 0 6px 16px rgba(0,0,0,0.3); }
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
+    .order-btn { background: linear-gradient(135deg, #3a86ff, #8338ec); border: none; color: white; padding: 0.5rem 1rem; border-radius: 40px; font-size: 0.8rem; font-weight: 500; }
+    .order-btn:hover { transform: scale(1.05); }
+    .wishlist-btn { background: none; border: 1px solid rgba(255,255,255,0.3); border-radius: 40px; padding: 0.5rem 1rem; font-size: 0.8rem; }
+    .wishlist-btn:hover { background: rgba(255,255,255,0.1); }
     .toast { position: fixed; bottom: 30px; right: 30px; background: #1a1a1a; backdrop-filter: blur(8px); border-left: 4px solid #3a86ff; padding: 12px 20px; border-radius: 12px; color: white; z-index: 10002; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
-    .wishlist-btn { background: none; border: 1px solid rgba(255,255,255,0.3); border-radius: 40px; padding: 0.5rem 1rem; font-size: 0.8rem; transition: all 0.2s; }
-    .wishlist-btn:hover { background: rgba(255,255,255,0.1); border-color: white; }
+    .wishlist-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 1rem; }
   </style>
 </head>
 <body>
@@ -64,6 +62,8 @@
         <a href="#products" data-page="products" class="nav-link page-link">Products</a>
         <a href="#philosophy" data-page="philosophy" class="nav-link page-link">Philosophy</a>
         <a href="#contact" data-page="contact" class="nav-link page-link">Contact</a>
+        <a href="#wishlist" data-page="wishlist" class="nav-link page-link">❤️ Wishlist</a>
+        <a href="#orders" data-page="orders" class="nav-link page-link">📦 My Orders</a>
       </div>
       <div class="md:hidden text-2xl cursor-pointer text-white" id="menu-toggle"><i class="fas fa-bars"></i></div>
     </div>
@@ -72,10 +72,12 @@
       <a href="#products" data-page="products" class="page-link text-white">Products</a>
       <a href="#philosophy" data-page="philosophy" class="page-link text-white">Philosophy</a>
       <a href="#contact" data-page="contact" class="page-link text-white">Contact</a>
+      <a href="#wishlist" data-page="wishlist" class="page-link text-white">❤️ Wishlist</a>
+      <a href="#orders" data-page="orders" class="page-link text-white">📦 My Orders</a>
     </div>
   </nav>
 
-  <!-- HOME PAGE (same as before) -->
+  <!-- HOME PAGE (unchanged) -->
   <div id="home-page" class="page active">
     <section class="px-6 md:px-20 pt-28 pb-12"><div class="max-w-7xl mx-auto"><div class="text-center mb-12"><span class="text-xs font-mono uppercase tracking-wider bg-white/10 px-4 py-1.5 rounded-full text-white/80 inline-block">⭐ best in class</span><h2 class="text-3xl md:text-5xl font-bold tracking-tight mt-4 text-white">Best Sellers</h2><p class="text-white/50 max-w-2xl mx-auto mt-3">Most loved by our community</p></div><div id="best-selling-grid" class="product-grid"></div></div></section>
     <section class="min-h-[70vh] flex flex-col justify-center items-start px-6 md:px-20 py-16"><div class="max-w-6xl mx-auto w-full"><div class="hero-content"><span class="text-sm uppercase tracking-[0.2em] text-white/70 mb-2 block">✦  Defining tomorrow</span><h1 class="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter text-white leading-[1.1]">MaaZ<br>visions.</h1><p class="text-xl md:text-2xl text-white/70 max-w-2xl mt-8 leading-relaxed">Where minimalism meets in designed to reshape perception.</p><div class="mt-12 flex flex-wrap gap-8"><a href="#products" data-page="products" class="page-link group flex items-center gap-2 border-b-2 border-white/50 pb-1 text-white font-medium text-lg transition-all hover:gap-3">Explore collection → <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i></a><a href="#contact" data-page="contact" class="page-link text-white/70 hover:text-white transition flex items-center gap-2 text-lg"><i class="far fa-circle"></i> Get in touch</a></div></div></div></section>
@@ -88,50 +90,46 @@
   <!-- PHILOSOPHY PAGE (unchanged) -->
   <div id="philosophy-page" class="page"><section class="px-6 md:px-20 py-24 md:py-32 min-h-screen"><div class="max-w-7xl mx-auto"><div class="grid md:grid-cols-2 gap-16 items-center mb-20"><div><span class="text-xs font-mono bg-white/10 px-4 py-1.5 rounded-full">core belief</span><h2 class="text-4xl md:text-5xl font-bold tracking-tight mt-6 text-white">Design as a dialogue.</h2><p class="text-white/70 text-lg mt-6 leading-relaxed">Every Maaz product merges tactile elegance with invisible technology. We don't just build objects — we cultivate relationships between human and machine.</p><div class="mt-10 flex gap-4"><div class="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-5 py-2 rounded-full"><i class="fas fa-leaf text-white/80"></i><span class="text-sm font-medium text-white">Carbon neutral</span></div><div class="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-5 py-2 rounded-full"><i class="fas fa-infinity text-white/80"></i><span class="text-sm font-medium text-white">Open ecosystem</span></div></div></div><div class="flex justify-center"><div class="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20 text-center shadow-xl transition-all hover:scale-105 duration-500"><i class="fas fa-quote-right text-4xl text-white/40 mb-4"></i><p class="italic text-white/80 text-xl">"Maaz exists at the intersection of curiosity and craft."</p><p class="text-xs uppercase mt-6 tracking-wider text-white/50">— design manifesto</p></div></div></div><div class="grid md:grid-cols-3 gap-6 mt-12"><div class="bg-white/5 backdrop-blur-sm p-6 rounded-2xl border border-white/10"><i class="fas fa-gem text-3xl text-white/60 mb-4"></i><h3 class="font-bold text-xl text-white">Precision</h3><p class="text-white/60 mt-2">Crafted with obsessive attention to every micrometer.</p></div><div class="bg-white/5 backdrop-blur-sm p-6 rounded-2xl border border-white/10"><i class="fas fa-hand-peace text-3xl text-white/60 mb-4"></i><h3 class="font-bold text-xl text-white">Simplicity</h3><p class="text-white/60 mt-2">Removing the unnecessary, elevating the essential.</p></div><div class="bg-white/5 backdrop-blur-sm p-6 rounded-2xl border border-white/10"><i class="fas fa-chart-line text-3xl text-white/60 mb-4"></i><h3 class="font-bold text-xl text-white">Evolution</h3><p class="text-white/60 mt-2">Constant refinement through user feedback loops.</p></div></div></div></section></div>
 
-  <!-- CONTACT PAGE (fixed) -->
+  <!-- CONTACT PAGE -->
   <div id="contact-page" class="page"><section class="px-6 md:px-20 py-24 md:py-32 min-h-screen"><div class="max-w-5xl mx-auto"><div class="text-center mb-16"><h2 class="text-4xl md:text-6xl font-bold tracking-tighter text-white">Shape the future<span class="text-white/40">.</span></h2><p class="text-white/60 text-xl mt-6 max-w-xl mx-auto">Interested in early access? Reach out to our studio.</p></div><div class="grid md:grid-cols-2 gap-12"><div><h3 class="text-2xl font-semibold mb-6 text-white">Let’s talk.</h3><form id="contact-form"><div class="mb-4"><input type="text" id="contact-name" placeholder="Your name" required></div><div class="mb-4"><input type="email" id="contact-email" placeholder="Email address" required></div><div class="mb-4"><textarea id="contact-message" rows="4" placeholder="Your message" required></textarea></div><button type="submit" class="bg-white text-black px-8 py-3 rounded-full hover:bg-white/90 transition w-full font-medium">Send message →</button><p id="form-feedback" class="text-sm mt-3 text-center text-green-400 hidden">✓ Message sent! We'll reply soon.</p></form></div><div><h3 class="text-2xl font-semibold mb-6 text-white">Studio details</h3><div class="space-y-6"><div class="flex items-start gap-4"><i class="fas fa-map-marker-alt text-xl text-white/60 mt-1"></i><div><p class="font-medium text-white">Maaz Studio</p><p class="text-white/60">San Francisco, CA</p></div></div><div class="flex items-start gap-4"><i class="fas fa-envelope text-xl text-white/60 mt-1"></i><div><p class="font-medium text-white">hello@maaz.studio</p><p class="text-white/60">Response within 24h</p></div></div><div class="flex items-start gap-4"><i class="fab fa-instagram text-xl text-white/60 mt-1"></i><div><p class="font-medium text-white">@maaz.studio</p><p class="text-white/60">Follow for updates</p></div></div></div><div class="mt-8"><h3 class="text-xl font-semibold mb-4 text-white">Newsletter</h3><div class="flex"><input type="email" id="newsletter-email" placeholder="your@email.com" class="flex-1 rounded-l-2xl rounded-r-none"><button id="newsletter-btn" class="bg-white text-black px-6 rounded-r-2xl hover:bg-white/90">Subscribe</button></div><p id="newsletter-feedback" class="text-xs mt-2 text-green-400 hidden">Thanks for subscribing!</p></div></div></div><div class="mt-16 text-center"><div class="flex justify-center gap-10 text-white/60 text-3xl"><a href="https://instagram.com" target="_blank" class="fab fa-instagram hover:text-white transition-transform hover:scale-110"></a><a href="https://twitter.com" target="_blank" class="fab fa-x-twitter hover:text-white transition-transform hover:scale-110"></a><a href="https://linkedin.com" target="_blank" class="fab fa-linkedin-in hover:text-white transition-transform hover:scale-110"></a><a href="https://behance.net" target="_blank" class="fab fa-behance hover:text-white transition-transform hover:scale-110"></a></div></div></div></section></div>
+
+  <!-- WISHLIST PAGE (new) -->
+  <div id="wishlist-page" class="page">
+    <section class="px-6 md:px-20 py-24 md:py-32 min-h-screen">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-4xl md:text-5xl font-bold mb-8 text-center">❤️ My Wishlist</h2>
+        <div id="wishlist-items-container" class="space-y-4"></div>
+        <p id="empty-wishlist" class="text-center text-white/50 mt-8">Your wishlist is empty. Start adding products!</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- ORDERS PAGE (new) -->
+  <div id="orders-page" class="page">
+    <section class="px-6 md:px-20 py-24 md:py-32 min-h-screen">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-4xl md:text-5xl font-bold mb-8 text-center">📦 My Orders</h2>
+        <div class="card bg-white/10 p-6 rounded-2xl mb-8">
+          <label class="block mb-2">Enter your email to see orders</label>
+          <div class="flex gap-2">
+            <input type="email" id="order-email" placeholder="Email used at checkout" class="flex-1">
+            <button id="lookup-orders" class="bg-blue-600 px-4 rounded-xl">Search</button>
+          </div>
+        </div>
+        <div id="orders-list" class="space-y-4"></div>
+        <p id="no-orders" class="text-center text-white/50 hidden">No orders found for this email.</p>
+      </div>
+    </section>
+  </div>
 
   <footer class="border-t border-white/10 py-12 text-center text-white/40 text-sm"><p>© 2026 Maaz — designed to reshape perception.</p></footer>
 </div>
 
 <!-- Product Details Modal -->
-<div id="product-modal" class="modal">
-  <div class="modal-content">
-    <span class="close-modal">&times;</span>
-    <div class="text-6xl text-center mb-4" id="modal-icon"><i class="fas fa-microchip"></i></div>
-    <h3 id="modal-title" class="text-2xl font-bold text-center text-white">Neural Frame</h3>
-    <p id="modal-price" class="text-lg font-semibold text-center text-white/80 mt-2">$489</p>
-    <p id="modal-desc" class="mt-6 text-white/70 leading-relaxed">Description here</p>
-    <div class="mt-5 p-4 bg-white/10 rounded-xl"><p class="text-sm font-semibold text-white">Specifications</p><p id="modal-specs" class="text-sm text-white/60 mt-1"></p></div>
-    <div class="flex gap-3 mt-6">
-      <button id="modal-order-btn" class="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-3 rounded-full text-sm font-medium hover:scale-105 transition">Order Now →</button>
-      <button id="modal-wishlist-btn" class="flex-1 border border-white/30 rounded-full py-3 text-sm text-white hover:bg-white/10 transition">Add to wishlist</button>
-    </div>
-  </div>
-</div>
+<div id="product-modal" class="modal"><div class="modal-content"><span class="close-modal">&times;</span><div class="text-6xl text-center mb-4" id="modal-icon"><i class="fas fa-microchip"></i></div><h3 id="modal-title" class="text-2xl font-bold text-center text-white">Neural Frame</h3><p id="modal-price" class="text-lg font-semibold text-center text-white/80 mt-2">$489</p><p id="modal-desc" class="mt-6 text-white/70 leading-relaxed">Description here</p><div class="mt-5 p-4 bg-white/10 rounded-xl"><p class="text-sm font-semibold text-white">Specifications</p><p id="modal-specs" class="text-sm text-white/60 mt-1"></p></div><div class="flex gap-3 mt-6"><button id="modal-order-btn" class="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-3 rounded-full text-sm font-medium hover:scale-105 transition">Order Now →</button><button id="modal-wishlist-btn" class="flex-1 border border-white/30 rounded-full py-3 text-sm text-white hover:bg-white/10 transition">Add to wishlist</button></div></div></div>
 
-<!-- Checkout Modal (Order Placement) -->
-<div id="checkout-modal" class="checkout-modal">
-  <div class="checkout-content">
-    <span class="close-checkout">&times;</span>
-    <h2 class="text-2xl font-bold mb-4 text-center">Complete Your Order</h2>
-    <form id="checkout-form">
-      <input type="text" id="checkout-name" placeholder="Full Name *" required>
-      <input type="email" id="checkout-email" placeholder="Email Address *" required>
-      <input type="tel" id="checkout-phone" placeholder="Phone Number *" required>
-      <textarea id="checkout-address" rows="3" placeholder="Delivery Address *" required></textarea>
-      <select id="checkout-payment" required>
-        <option value="">Select Payment Method</option>
-        <option value="Cash on Delivery">Cash on Delivery</option>
-        <option value="Credit Card">Credit Card</option>
-        <option value="PayPal">PayPal</option>
-      </select>
-      <div id="checkout-product-info" class="text-sm text-white/60 mb-4 p-2 bg-white/5 rounded-xl"></div>
-      <button type="submit" class="bg-green-600 hover:bg-green-700 w-full py-3 rounded-full font-semibold">Place Order</button>
-    </form>
-    <p id="order-feedback" class="text-sm mt-3 text-center text-green-400 hidden"></p>
-  </div>
-</div>
+<!-- Checkout Modal -->
+<div id="checkout-modal" class="checkout-modal"><div class="checkout-content"><span class="close-checkout">&times;</span><h2 class="text-2xl font-bold mb-4 text-center">Complete Your Order</h2><form id="checkout-form"><input type="text" id="checkout-name" placeholder="Full Name *" required><input type="email" id="checkout-email" placeholder="Email Address *" required><input type="tel" id="checkout-phone" placeholder="Phone Number *" required><textarea id="checkout-address" rows="3" placeholder="Delivery Address *" required></textarea><select id="checkout-payment" required><option value="">Select Payment Method</option><option value="Cash on Delivery">Cash on Delivery</option><option value="Credit Card">Credit Card</option><option value="PayPal">PayPal</option></select><div id="checkout-product-info" class="text-sm text-white/60 mb-4 p-2 bg-white/5 rounded-xl"></div><button type="submit" class="bg-green-600 hover:bg-green-700 w-full py-3 rounded-full font-semibold">Place Order</button></form><p id="order-feedback" class="text-sm mt-3 text-center text-green-400 hidden"></p></div></div>
 
 <script type="importmap">
   {
@@ -145,7 +143,7 @@
 <script type="module">
   import * as THREE from 'three';
   import { initializeApp } from "firebase/app";
-  import { getFirestore, collection, getDocs, addDoc, serverTimestamp } from "firebase/firestore";
+  import { getFirestore, collection, getDocs, addDoc, serverTimestamp, query, where, getDoc, doc } from "firebase/firestore";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCyG5fwhCstTKBVjwz5j3D6UHvDHyho8J0",
@@ -161,8 +159,16 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   let selectedProductForCheckout = null;
+  let currentWishlist = [];
 
-  // ----- 3D Background (same optimized version) -----
+  // Generate or retrieve anonymous user ID for wishlist
+  let userId = localStorage.getItem('wishlist_user_id');
+  if (!userId) {
+    userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
+    localStorage.setItem('wishlist_user_id', userId);
+  }
+
+  // ----- 3D Background (optimized) -----
   const container = document.getElementById('canvas-container');
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x050510);
@@ -180,8 +186,8 @@
   const wireMat = new THREE.MeshBasicMaterial({ color: 0x88aaff, wireframe: true, transparent: true, opacity: 0.2 });
   const knotWire = new THREE.Mesh(geometry, wireMat);
   scene.add(knotWire);
-  // particles
-  const particleCount = 1500;
+  // particles (reduced)
+  const particleCount = 1200;
   const particlesGeometry = new THREE.BufferGeometry();
   const posArray = new Float32Array(particleCount * 3);
   for (let i = 0; i < particleCount; i++) { const radius = 6 + Math.random() * 6; const theta = Math.random() * Math.PI * 2; const phi = Math.acos(2 * Math.random() - 1); posArray[i*3] = radius * Math.sin(phi) * Math.cos(theta); posArray[i*3+1] = radius * Math.sin(phi) * Math.sin(theta) * 0.8; posArray[i*3+2] = radius * Math.cos(phi); }
@@ -197,7 +203,7 @@
   const backLight = new THREE.PointLight(0x4466ff, 0.8);
   backLight.position.set(-2, 1, -4);
   scene.add(backLight);
-  const starCount = 800;
+  const starCount = 600;
   const starGeo = new THREE.BufferGeometry();
   const starPos = [];
   for (let i = 0; i < starCount; i++) { starPos.push((Math.random() - 0.5) * 200); starPos.push((Math.random() - 0.5) * 100); starPos.push((Math.random() - 0.5) * 80 - 40); }
@@ -216,7 +222,6 @@
     knot.rotation.z = Math.sin(time * 0.25) * 0.15;
     knotWire.rotation.copy(knot.rotation);
     particles.rotation.y = time * 0.03;
-    particles.rotation.x = Math.sin(time * 0.1) * 0.05;
     stars.rotation.y = time * 0.01;
     camera.position.x += (mouseX * 1.2 - camera.position.x) * 0.05;
     camera.position.y += (-mouseY * 0.8 - camera.position.y) * 0.05;
@@ -227,7 +232,7 @@
   animate();
   window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
 
-  // Demo products fallback
+  // Demo products
   const demoProducts = [
     { name: "Neural Frame", price: "$489", desc: "Adaptive display that responds to ambient cognition.", specs: "OLED, edge AI, 5G", icon: "fa-microchip", shortDesc: "Adaptive display, AI-driven.", image: "" },
     { name: "Aether Pods", price: "$279", desc: "Spatial audio with haptic resonance.", specs: "40mm drivers, 30h battery", icon: "fa-waveform", shortDesc: "Spatial audio", image: "" },
@@ -244,7 +249,7 @@
     return `
       <div class="product-card rounded-3xl p-6 md:p-8" data-product='${JSON.stringify(product)}'>
         ${isBestSeller ? '<div class="best-seller-badge">🏆 BEST SELLER</div>' : ''}
-        ${hasImage ? `<img src="${escapeHtml(product.image)}" class="card-image" alt="${escapeHtml(product.name)}">` : `<div class="w-full h-56 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center text-7xl mb-6"><i class="fas ${icon} text-white/50 card-icon"></i></div>`}
+        ${hasImage ? `<img src="${escapeHtml(product.image)}" class="card-image" alt="${escapeHtml(product.name)}">` : `<div class="w-full h-56 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center text-7xl mb-6"><i class="fas ${icon} text-white/50"></i></div>`}
         <h3 class="text-2xl font-bold tracking-tight text-white">${escapeHtml(product.name)}</h3>
         <p class="text-white/60 mt-2 text-sm">${escapeHtml(shortDesc)}</p>
         <div class="mt-5 flex justify-between items-center gap-2 flex-wrap">
@@ -252,10 +257,106 @@
           <div class="flex gap-2">
             <a href="#" class="learn-more-btn text-sm uppercase border-b border-white/40 pb-0.5 hover:border-white transition-all">Details →</a>
             <button class="order-now-btn order-btn text-sm px-3 py-1 rounded-full">Order now</button>
+            <button class="wishlist-add-btn wishlist-btn text-sm px-3 py-1 rounded-full"><i class="far fa-heart"></i></button>
           </div>
         </div>
       </div>
     `;
+  }
+
+  // Wishlist functions
+  async function loadWishlist() {
+    const q = query(collection(db, 'wishlists'), where('userId', '==', userId));
+    const snapshot = await getDocs(q);
+    const items = [];
+    snapshot.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
+    currentWishlist = items;
+    return items;
+  }
+
+  async function addToWishlist(product) {
+    const existing = currentWishlist.find(item => item.productId === (product.id || product.name));
+    if (existing) {
+      showToast("Already in wishlist");
+      return;
+    }
+    try {
+      await addDoc(collection(db, 'wishlists'), {
+        userId: userId,
+        productId: product.id || product.name,
+        product: product,
+        addedAt: serverTimestamp()
+      });
+      showToast(`❤️ Added "${product.name}" to wishlist`);
+      if (pages['wishlist'] && document.getElementById('wishlist-page').classList.contains('active')) {
+        renderWishlistPage();
+      }
+      loadWishlist();
+    } catch (err) { showToast("Error adding to wishlist"); }
+  }
+
+  async function removeFromWishlist(itemId) {
+    await deleteDoc(doc(db, 'wishlists', itemId));
+    showToast("Removed from wishlist");
+    if (document.getElementById('wishlist-page').classList.contains('active')) renderWishlistPage();
+    loadWishlist();
+  }
+
+  async function renderWishlistPage() {
+    const items = await loadWishlist();
+    const container = document.getElementById('wishlist-items-container');
+    const emptyMsg = document.getElementById('empty-wishlist');
+    if (!items.length) {
+      container.innerHTML = '';
+      emptyMsg.classList.remove('hidden');
+      return;
+    }
+    emptyMsg.classList.add('hidden');
+    container.innerHTML = items.map(item => `
+      <div class="wishlist-item p-4 bg-white/5 rounded-xl flex justify-between items-center">
+        <div>
+          <h3 class="font-bold">${escapeHtml(item.product.name)}</h3>
+          <p class="text-sm text-white/60">${escapeHtml(item.product.price)}</p>
+        </div>
+        <div class="flex gap-2">
+          <button class="order-from-wishlist bg-blue-600 px-3 py-1 rounded-lg text-sm" data-product='${JSON.stringify(item.product)}'>Order</button>
+          <button class="remove-wishlist bg-red-600 px-3 py-1 rounded-lg text-sm" data-id="${item.id}">Remove</button>
+        </div>
+      </div>
+    `).join('');
+    document.querySelectorAll('.order-from-wishlist').forEach(btn => {
+      btn.onclick = () => openCheckout(JSON.parse(btn.getAttribute('data-product')));
+    });
+    document.querySelectorAll('.remove-wishlist').forEach(btn => {
+      btn.onclick = async () => { await removeFromWishlist(btn.getAttribute('data-id')); renderWishlistPage(); };
+    });
+  }
+
+  // Order lookup
+  async function lookupOrdersByEmail(email) {
+    const ordersRef = collection(db, 'orders');
+    const q = query(ordersRef, where('customer.email', '==', email));
+    const snapshot = await getDocs(q);
+    const orders = [];
+    snapshot.forEach(doc => orders.push({ id: doc.id, ...doc.data() }));
+    const container = document.getElementById('orders-list');
+    const noOrders = document.getElementById('no-orders');
+    if (!orders.length) {
+      container.innerHTML = '';
+      noOrders.classList.remove('hidden');
+      return;
+    }
+    noOrders.classList.add('hidden');
+    container.innerHTML = orders.map(order => `
+      <div class="bg-white/10 p-4 rounded-xl">
+        <div class="flex justify-between">
+          <span class="font-bold">${escapeHtml(order.product.name)}</span>
+          <span class="text-green-400">${order.status || 'pending'}</span>
+        </div>
+        <div class="text-sm text-white/60">Price: ${order.product.price} | Qty: 1</div>
+        <div class="text-xs text-white/40 mt-2">Order ID: ${order.orderId || order.id}</div>
+      </div>
+    `).join('');
   }
 
   function openCheckout(product) {
@@ -273,6 +374,10 @@
       btn.removeEventListener('click', orderClickHandler);
       btn.addEventListener('click', orderClickHandler);
     });
+    document.querySelectorAll('.wishlist-add-btn').forEach(btn => {
+      btn.removeEventListener('click', wishlistClickHandler);
+      btn.addEventListener('click', wishlistClickHandler);
+    });
   }
 
   function modalClickHandler(e) {
@@ -282,13 +387,17 @@
     const productData = JSON.parse(card.getAttribute('data-product'));
     openModal(productData);
   }
-
   function orderClickHandler(e) {
     e.stopPropagation();
     const card = e.currentTarget.closest('.product-card');
     if (!card) return;
-    const productData = JSON.parse(card.getAttribute('data-product'));
-    openCheckout(productData);
+    openCheckout(JSON.parse(card.getAttribute('data-product')));
+  }
+  function wishlistClickHandler(e) {
+    e.stopPropagation();
+    const card = e.currentTarget.closest('.product-card');
+    if (!card) return;
+    addToWishlist(JSON.parse(card.getAttribute('data-product')));
   }
 
   function openModal(product) {
@@ -301,7 +410,7 @@
     const modalOrderBtn = document.getElementById('modal-order-btn');
     modalOrderBtn.onclick = () => { openCheckout(product); document.getElementById('product-modal').style.display = 'none'; };
     const modalWishlistBtn = document.getElementById('modal-wishlist-btn');
-    modalWishlistBtn.onclick = () => { showToast(`❤️ "${product.name}" added to wishlist (demo)`); };
+    modalWishlistBtn.onclick = () => { addToWishlist(product); };
     document.getElementById('product-modal').style.display = 'flex';
   }
 
@@ -311,62 +420,62 @@
       const querySnapshot = await getDocs(collection(db, 'products'));
       querySnapshot.forEach(doc => products.push({ id: doc.id, ...doc.data() }));
       if (products.length === 0) products = demoProducts;
-    } catch(e) { console.warn("Firebase error, using demo", e); products = demoProducts; }
+    } catch(e) { products = demoProducts; }
     products = products.map(p => ({ ...p, shortDesc: p.shortDesc || (p.desc ? p.desc.substring(0,60) : ''), icon: p.icon || 'fa-microchip' }));
     const bestSellers = products.slice(0, 3);
     const otherProducts = products.slice(3);
-    const allProducts = products;
     document.getElementById('best-selling-grid').innerHTML = bestSellers.map(p => createProductCard(p, true)).join('');
     document.getElementById('other-collection-grid').innerHTML = otherProducts.map(p => createProductCard(p, false)).join('');
-    document.getElementById('all-products-grid').innerHTML = allProducts.map(p => createProductCard(p, false)).join('');
+    document.getElementById('all-products-grid').innerHTML = products.map(p => createProductCard(p, false)).join('');
     attachProductEvents();
   }
 
-  // Order submission to Firebase
-  const checkoutForm = document.getElementById('checkout-form');
-  if (checkoutForm) {
-    checkoutForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const name = document.getElementById('checkout-name').value.trim();
-      const email = document.getElementById('checkout-email').value.trim();
-      const phone = document.getElementById('checkout-phone').value.trim();
-      const address = document.getElementById('checkout-address').value.trim();
-      const payment = document.getElementById('checkout-payment').value;
-      if (!name || !email || !phone || !address || !payment) {
-        showToast("Please fill all fields");
-        return;
-      }
-      if (!selectedProductForCheckout) return;
-      const orderData = {
-        product: selectedProductForCheckout,
-        customer: { name, email, phone, address, paymentMethod: payment },
-        status: "pending",
-        createdAt: serverTimestamp(),
-        orderId: Date.now().toString()
-      };
-      try {
-        await addDoc(collection(db, 'orders'), orderData);
-        document.getElementById('order-feedback').textContent = "✓ Order placed successfully! We'll contact you soon.";
-        document.getElementById('order-feedback').classList.remove('hidden');
-        setTimeout(() => {
-          document.getElementById('checkout-modal').style.display = 'none';
-          document.getElementById('order-feedback').classList.add('hidden');
-          checkoutForm.reset();
-          selectedProductForCheckout = null;
-          showToast("🎉 Order confirmed! Thank you.");
-        }, 2000);
-      } catch (err) {
-        showToast("Error placing order: " + err.message);
-      }
-    });
-  }
+  // Checkout form submission
+  document.getElementById('checkout-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('checkout-name').value.trim();
+    const email = document.getElementById('checkout-email').value.trim();
+    const phone = document.getElementById('checkout-phone').value.trim();
+    const address = document.getElementById('checkout-address').value.trim();
+    const payment = document.getElementById('checkout-payment').value;
+    if (!name || !email || !phone || !address || !payment) { showToast("Please fill all fields"); return; }
+    if (!selectedProductForCheckout) return;
+    const orderData = {
+      product: selectedProductForCheckout,
+      customer: { name, email, phone, address, paymentMethod: payment },
+      status: "pending",
+      createdAt: serverTimestamp(),
+      orderId: Date.now().toString()
+    };
+    try {
+      await addDoc(collection(db, 'orders'), orderData);
+      document.getElementById('order-feedback').textContent = "✓ Order placed! We'll contact you soon.";
+      document.getElementById('order-feedback').classList.remove('hidden');
+      setTimeout(() => {
+        document.getElementById('checkout-modal').style.display = 'none';
+        document.getElementById('order-feedback').classList.add('hidden');
+        document.getElementById('checkout-form').reset();
+        selectedProductForCheckout = null;
+        showToast("🎉 Order confirmed! Thank you.");
+      }, 2000);
+    } catch (err) { showToast("Error: " + err.message); }
+  });
 
-  // Routing (same as before)
+  // Orders lookup
+  document.getElementById('lookup-orders')?.addEventListener('click', () => {
+    const email = document.getElementById('order-email').value.trim();
+    if (!email) { showToast("Please enter your email"); return; }
+    lookupOrdersByEmail(email);
+  });
+
+  // Routing
   const pages = {
     home: document.getElementById('home-page'),
     products: document.getElementById('products-page'),
     philosophy: document.getElementById('philosophy-page'),
-    contact: document.getElementById('contact-page')
+    contact: document.getElementById('contact-page'),
+    wishlist: document.getElementById('wishlist-page'),
+    orders: document.getElementById('orders-page')
   };
   function showPage(pageId) {
     Object.values(pages).forEach(p => { if (p) p.classList.remove('active'); });
@@ -377,10 +486,7 @@
     });
     history.pushState(null, '', `#${pageId}`);
     ScrollTrigger.refresh();
-    if (pages[pageId]) {
-      gsap.fromTo(pages[pageId].querySelectorAll('h1, h2, .hero-content p, .product-card'), 
-        { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.4, stagger: 0.05, clearProps: 'all' });
-    }
+    if (pageId === 'wishlist') renderWishlistPage();
   }
   document.querySelectorAll('.page-link').forEach(link => {
     link.addEventListener('click', (e) => {
@@ -398,6 +504,7 @@
     if (hash && pages[hash]) showPage(hash);
     else showPage('home');
     loadAllProducts();
+    loadWishlist();
   });
   window.addEventListener('popstate', () => {
     let hash = window.location.hash.slice(1);
@@ -472,7 +579,7 @@
     document.body.style.cursor = 'none';
   }
 
-  // Modals close
+  // Close modals
   const productModal = document.getElementById('product-modal');
   const checkoutModal = document.getElementById('checkout-modal');
   document.querySelectorAll('.close-modal, .close-checkout').forEach(btn => {
@@ -486,7 +593,6 @@
     if (e.target === checkoutModal) checkoutModal.style.display = 'none';
   });
 
-  // GSAP hero
   gsap.from('.hero-content h1', { opacity: 0, y: 50, duration: 1, ease: 'power4.out' });
   gsap.from('.hero-content p', { opacity: 0, y: 30, duration: 0.8, delay: 0.3 });
   gsap.from('.hero-content .mt-12', { opacity: 0, y: 20, delay: 0.5 });
