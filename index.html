@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Maaz — Product Detail Page (Fixed)</title>
+  <title>Maaz — Product Detail Working</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -12,12 +12,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; background-color: #0a0a0a; overflow-x: hidden; cursor: auto; }
-    /* Remove custom cursor for reliability */
-    .custom-cursor, .cursor-dot { display: none; }
-    @media (min-width: 768px) {
-      a, button, .product-card, .view-detail-btn { cursor: pointer; }
-    }
+    body { font-family: 'Inter', sans-serif; background-color: #0a0a0a; overflow-x: hidden; }
     .content-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); pointer-events: none; z-index: 5; }
     #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
     .content { position: relative; z-index: 10; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
@@ -41,7 +36,6 @@
     .btn-back:hover { background: rgba(255,255,255,0.2); }
     .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
     .view-detail-btn { background: linear-gradient(135deg, #3a86ff, #8338ec); border: none; color: white; padding: 0.5rem 1rem; border-radius: 40px; font-size: 0.8rem; font-weight: 500; cursor: pointer; }
-    .order-btn { background: linear-gradient(135deg, #3a86ff, #8338ec); border: none; color: white; padding: 0.5rem 1rem; border-radius: 40px; font-size: 0.8rem; font-weight: 500; }
   </style>
 </head>
 <body>
@@ -74,7 +68,7 @@
     </div>
   </nav>
 
-  <!-- HOME PAGE -->
+  <!-- HOME PAGE (same) -->
   <div id="home-page" class="page">
     <section class="px-6 md:px-20 pt-28 pb-12"><div class="max-w-7xl mx-auto"><div class="text-center mb-12"><span class="text-xs font-mono uppercase tracking-wider bg-white/10 px-4 py-1.5 rounded-full text-white/80 inline-block">⭐ best in class</span><h2 class="text-3xl md:text-5xl font-bold tracking-tight mt-4 text-white">Best Sellers</h2><p class="text-white/50 max-w-2xl mx-auto mt-3">Most loved by our community</p></div><div id="best-selling-grid" class="product-grid"></div></div></section>
     <section class="min-h-[70vh] flex flex-col justify-center items-start px-6 md:px-20 py-16"><div class="max-w-6xl mx-auto w-full"><div class="hero-content"><span class="text-sm uppercase tracking-[0.2em] text-white/70 mb-2 block">✦  Defining tomorrow</span><h1 class="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter text-white leading-[1.1]">MaaZ<br>visions.</h1><p class="text-xl md:text-2xl text-white/70 max-w-2xl mt-8 leading-relaxed">Where minimalism meets in designed to reshape perception.</p><div class="mt-12 flex flex-wrap gap-8"><a href="#products" data-page="products" class="page-link group flex items-center gap-2 border-b-2 border-white/50 pb-1 text-white font-medium text-lg transition-all hover:gap-3">Explore collection → <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i></a><a href="#contact" data-page="contact" class="page-link text-white/70 hover:text-white transition flex items-center gap-2 text-lg"><i class="far fa-circle"></i> Get in touch</a></div></div></div></section>
@@ -103,7 +97,7 @@
     </section>
   </div>
 
-  <!-- PHILOSOPHY, CONTACT, WISHLIST, ORDERS (minimal but functional) -->
+  <!-- other pages (minimal) -->
   <div id="philosophy-page" class="page"><section class="px-6 md:px-20 py-24 md:py-32 min-h-screen"><div class="max-w-7xl mx-auto"><div class="grid md:grid-cols-2 gap-16 items-center"><div><span class="text-xs font-mono bg-white/10 px-4 py-1.5 rounded-full">core belief</span><h2 class="text-4xl md:text-5xl font-bold tracking-tight mt-6 text-white">Design as a dialogue.</h2><p class="text-white/70 text-lg mt-6">Every Maaz product merges tactile elegance with invisible technology.</p></div><div class="flex justify-center"><div class="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20"><i class="fas fa-quote-right text-4xl text-white/40 mb-4"></i><p class="italic text-white/80 text-xl">"Maaz exists at the intersection of curiosity and craft."</p></div></div></div></div></section></div>
   <div id="contact-page" class="page"><section class="px-6 md:px-20 py-24 md:py-32 min-h-screen"><div class="max-w-4xl mx-auto text-center"><h2 class="text-4xl md:text-6xl font-bold tracking-tighter text-white">Shape the future.</h2><form id="contact-form" class="mt-8"><input type="text" id="cname" placeholder="Name" class="mb-3 w-full p-2 bg-white/10 rounded"><input type="email" id="cemail" placeholder="Email" class="mb-3 w-full p-2 bg-white/10 rounded"><textarea rows="4" id="cmsg" placeholder="Message" class="mb-3 w-full p-2 bg-white/10 rounded"></textarea><button type="submit" class="bg-white text-black px-8 py-3 rounded-full w-full">Send</button></form></div></section></div>
   <div id="wishlist-page" class="page"><section class="px-6 md:px-20 py-24 md:py-32 min-h-screen"><div class="max-w-4xl mx-auto"><h2 class="text-4xl font-bold mb-8 text-center">❤️ My Wishlist</h2><div id="wishlist-items-container"></div><p id="empty-wishlist" class="text-center text-white/50">Empty</p></div></section></div>
@@ -128,7 +122,7 @@
 <script type="module">
   import * as THREE from 'three';
   import { initializeApp } from "firebase/app";
-  import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, query, where, orderBy, serverTimestamp, getDoc } from "firebase/firestore";
+  import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, query, where, orderBy, serverTimestamp } from "firebase/firestore";
   import Swiper from 'swiper';
 
   const firebaseConfig = {
@@ -142,7 +136,7 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // 3D Background (same as before, but cursor removed)
+  // 3D background (same as before, shortened)
   const container = document.getElementById('canvas-container');
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x050510);
@@ -212,7 +206,7 @@
   function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
   function showToast(msg) { const toast = document.getElementById('toast-message'); toast.textContent = msg; toast.style.opacity = '1'; setTimeout(() => toast.style.opacity = '0', 3000); }
 
-  // Load products and render grids
+  // Load products and attach "View Details" button events
   async function loadProducts() {
     const snapshot = await getDocs(collection(db, 'products'));
     const products = [];
@@ -245,6 +239,7 @@
   }
 
   function showProductDetail(product) {
+    console.log("Showing detail for", product.name);
     document.getElementById('detail-title').innerText = product.name;
     document.getElementById('detail-price').innerText = product.price;
     document.getElementById('detail-desc').innerText = product.desc || 'No description available.';
@@ -410,18 +405,17 @@
     if (pages[hash]) showPage(hash);
     else showPage('home');
   });
+
   document.getElementById('menu-toggle').addEventListener('click', () => {
     const mm = document.getElementById('mobile-menu');
     mm.style.display = mm.style.display === 'flex' ? 'none' : 'flex';
   });
   document.getElementById('contact-form')?.addEventListener('submit', (e) => { e.preventDefault(); showToast("Message sent (demo)"); });
 
-  // Modal close
   const checkoutModal = document.getElementById('checkout-modal');
   document.querySelector('.close-checkout').addEventListener('click', () => checkoutModal.style.display = 'none');
   window.addEventListener('click', (e) => { if (e.target === checkoutModal) checkoutModal.style.display = 'none'; });
 
-  // Simple hero animations
   gsap.from('.hero-content h1', { opacity:0, y:50, duration:1 });
   gsap.from('.hero-content p', { opacity:0, y:30, duration:0.8, delay:0.3 });
 </script>
