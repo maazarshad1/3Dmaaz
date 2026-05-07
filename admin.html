@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maaz Admin - Advanced Products</title>
+    <title>Maaz Admin - Advanced Products (Video Upload)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -13,17 +13,18 @@
         button { transition: all 0.2s; cursor: pointer; }
         .tab-btn { background: transparent; border: none; padding: 0.75rem 1.5rem; font-size: 1rem; border-radius: 40px; margin-right: 0.5rem; }
         .tab-btn.active { background: #3b82f6; color: white; }
-        .product-item, .order-item { background: #1a1a1a; border-radius: 16px; padding: 1rem; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .product-item { background: #1a1a1a; border-radius: 16px; padding: 1rem; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
         .edit-btn { background: #3b82f6; padding: 0.25rem 1rem; border-radius: 20px; }
         .delete-btn { background: #dc2626; padding: 0.25rem 1rem; border-radius: 20px; }
         .save-btn { background: #10b981; padding: 0.5rem 1.5rem; border-radius: 40px; }
         .cancel-btn { background: #6b7280; padding: 0.5rem 1.5rem; border-radius: 40px; }
         .image-preview { max-width: 60px; max-height: 60px; border-radius: 8px; margin-right: 0.5rem; }
-        .images-preview-container { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+        .video-preview { max-width: 150px; margin-top: 0.5rem; }
     </style>
 </head>
 <body class="p-6">
     <div class="max-w-7xl mx-auto">
+        <!-- Login Screen -->
         <div id="login-screen" class="flex justify-center items-center min-h-screen">
             <div class="card w-full max-w-md">
                 <h2 class="text-2xl font-bold mb-6">Admin Login</h2>
@@ -36,7 +37,7 @@
 
         <div id="dashboard" style="display: none;">
             <div class="flex justify-between items-center mb-6">
-                <h1 class="text-3xl font-bold">Advanced CMS</h1>
+                <h1 class="text-3xl font-bold">Advanced CMS (Video Upload)</h1>
                 <button id="logout-btn" class="bg-red-600 px-4 py-2 rounded-xl">Logout</button>
             </div>
 
@@ -54,22 +55,23 @@
                         <input type="text" id="product-name" placeholder="Product name *">
                         <input type="text" id="product-price" placeholder="Price (e.g., $489)">
                         <textarea id="product-desc" rows="2" placeholder="Short description"></textarea>
-                        <textarea id="product-specs" rows="2" placeholder="Specifications"></textarea>
+                        <textarea id="product-specs" rows="2" placeholder="Specifications (multi-line)"></textarea>
                         <input type="text" id="product-icon" placeholder="Icon (fa-microchip)" value="fa-microchip">
                         <div>
-                            <label class="text-sm">Main Image (Upload or URL)</label>
+                            <label class="text-sm">Main Image</label>
                             <input type="file" id="main-image-upload" accept="image/*">
                             <input type="text" id="main-image-url" placeholder="Or paste main image URL" class="mt-2">
                         </div>
                         <div>
-                            <label class="text-sm">Additional Images (comma separated URLs or upload one by one)</label>
+                            <label class="text-sm">Additional Images (one per line or upload multiple)</label>
                             <input type="file" id="extra-images-upload" accept="image/*" multiple>
                             <textarea id="extra-images-urls" rows="2" placeholder="Or paste image URLs, one per line"></textarea>
-                            <div id="extra-images-preview" class="images-preview-container"></div>
                         </div>
                         <div>
-                            <label class="text-sm">Video URL (YouTube, Vimeo, etc.)</label>
-                            <input type="text" id="product-video" placeholder="https://youtube.com/watch?v=...">
+                            <label class="text-sm">Video (YouTube/Vimeo link OR upload video file)</label>
+                            <input type="text" id="product-video-url" placeholder="YouTube / Vimeo / MP4 link">
+                            <input type="file" id="video-upload" accept="video/*">
+                            <div id="video-progress" class="text-xs text-gray-400 mt-1"></div>
                         </div>
                     </div>
                     <div class="flex gap-3 mt-4">
@@ -88,13 +90,13 @@
                 <div class="card"><h2 class="text-xl font-semibold mb-4">Orders</h2><div id="orders-list"></div></div>
             </div>
 
-            <!-- Settings Panel (same as before) -->
+            <!-- Settings Panel (minimal) -->
             <div id="settings-panel" style="display: none;">
                 <div class="card">
                     <h2 class="text-xl font-semibold mb-4">Website Settings</h2>
-                    <div class="section"><h3>Hero</h3>
-                        <input type="text" id="hero-title-line1" placeholder="First line"><input type="text" id="hero-title-line2" placeholder="Second line"><textarea id="hero-tagline" rows="2"></textarea><input type="text" id="hero-btn-text" placeholder="Button text">
-                    </div>
+                    <input type="text" id="hero-title-line1" placeholder="Hero line 1">
+                    <input type="text" id="hero-title-line2" placeholder="Hero line 2">
+                    <textarea id="hero-tagline" rows="2" placeholder="Tagline"></textarea>
                     <button id="save-settings-btn" class="bg-blue-600 w-full py-2 rounded-xl">Save Settings</button>
                     <p id="settings-message" class="text-sm mt-2"></p>
                 </div>
@@ -125,9 +127,10 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Cloudinary
+        // Cloudinary config (free tier, supports video)
         const CLOUD_NAME = "djfyusbqm";
-        const UPLOAD_PRESET = "product_images";
+        const UPLOAD_PRESET_IMAGE = "product_images";   // unsigned preset for images
+        const UPLOAD_PRESET_VIDEO = "product_videos";   // create an unsigned preset for video as well
 
         const VALID_USERNAME = "admin";
         const VALID_PASSWORD = "maaz123";
@@ -155,7 +158,9 @@
         const mainImageUrl = document.getElementById('main-image-url');
         const extraImagesUpload = document.getElementById('extra-images-upload');
         const extraImagesUrls = document.getElementById('extra-images-urls');
-        const productVideo = document.getElementById('product-video');
+        const productVideoUrl = document.getElementById('product-video-url');
+        const videoUpload = document.getElementById('video-upload');
+        const videoProgress = document.getElementById('video-progress');
         const saveBtn = document.getElementById('save-product-btn');
         const cancelBtn = document.getElementById('cancel-edit');
         const formTitle = document.getElementById('form-title');
@@ -167,26 +172,27 @@
         let editingProductId = null;
         let pendingMainImage = null;
         let pendingExtraImages = [];
+        let pendingVideoFile = null;
 
-        async function uploadToCloudinary(file, progressCallback) {
+        // Upload to Cloudinary (supports both image and video)
+        async function uploadToCloudinary(file, preset, onProgress) {
             if (!file) return null;
-            const url = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
+            const url = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`;
             const formData = new FormData();
             formData.append("file", file);
-            formData.append("upload_preset", UPLOAD_PRESET);
-            if (progressCallback) progressCallback(0);
+            formData.append("upload_preset", preset);
             return new Promise((resolve, reject) => {
                 const xhr = new XMLHttpRequest();
                 xhr.open("POST", url, true);
-                xhr.upload.onprogress = (e) => {
-                    if (e.lengthComputable && progressCallback) {
-                        progressCallback(Math.round((e.loaded / e.total) * 100));
-                    }
-                };
+                if (onProgress) {
+                    xhr.upload.onprogress = (e) => {
+                        if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100));
+                    };
+                }
                 xhr.onload = () => {
                     if (xhr.status === 200) {
-                        const response = JSON.parse(xhr.responseText);
-                        resolve(response.secure_url);
+                        const resp = JSON.parse(xhr.responseText);
+                        resolve(resp.secure_url);
                     } else reject(new Error("Upload failed"));
                 };
                 xhr.onerror = () => reject(new Error("Network error"));
@@ -205,32 +211,38 @@
             formMessage.textContent = 'Saving...';
             formMessage.classList.remove('text-red-400', 'text-green-400');
             try {
+                // main image
                 let mainImage = mainImageUrl.value.trim();
                 if (pendingMainImage) {
                     uploadProgress.textContent = 'Uploading main image...';
-                    mainImage = await uploadToCloudinary(pendingMainImage, (p) => { uploadProgress.textContent = `Main image ${p}%`; });
+                    mainImage = await uploadToCloudinary(pendingMainImage, UPLOAD_PRESET_IMAGE, (p) => { uploadProgress.textContent = `Main image ${p}%`; });
                     mainImageUrl.value = mainImage;
                     pendingMainImage = null;
                     mainImageUpload.value = '';
                 }
-                let extraImages = [];
-                // Parse URLs from textarea (one per line)
-                const urlsText = extraImagesUrls.value;
-                if (urlsText.trim()) {
-                    extraImages = urlsText.split('\n').map(u => u.trim()).filter(u => u);
-                }
-                // Upload any newly selected extra images
+                // extra images from URLs (newline separated)
+                let extraImages = extraImagesUrls.value.split('\n').map(u => u.trim()).filter(u => u);
+                // extra images from file uploads
                 if (pendingExtraImages.length) {
                     uploadProgress.textContent = `Uploading ${pendingExtraImages.length} extra images...`;
                     for (let i = 0; i < pendingExtraImages.length; i++) {
-                        const imgUrl = await uploadToCloudinary(pendingExtraImages[i], (p) => { uploadProgress.textContent = `Extra ${i+1}: ${p}%`; });
+                        const imgUrl = await uploadToCloudinary(pendingExtraImages[i], UPLOAD_PRESET_IMAGE, (p) => { uploadProgress.textContent = `Extra ${i+1}: ${p}%`; });
                         extraImages.push(imgUrl);
                     }
                     pendingExtraImages = [];
                     extraImagesUpload.value = '';
                     extraImagesUrls.value = extraImages.join('\n');
                 }
-                const videoUrl = productVideo.value.trim();
+                // video: either URL or uploaded file
+                let videoUrl = productVideoUrl.value.trim();
+                if (pendingVideoFile) {
+                    videoProgress.textContent = 'Uploading video...';
+                    videoUrl = await uploadToCloudinary(pendingVideoFile, UPLOAD_PRESET_VIDEO, (p) => { videoProgress.textContent = `Video ${p}%`; });
+                    productVideoUrl.value = videoUrl;
+                    pendingVideoFile = null;
+                    videoUpload.value = '';
+                    videoProgress.textContent = '';
+                }
                 const productData = {
                     name, price,
                     desc: productDesc.value.trim(),
@@ -248,16 +260,17 @@
                     formMessage.textContent = 'Product added!';
                 }
                 formMessage.classList.add('text-green-400');
-                resetProductForm();
+                resetForm();
                 await loadProducts();
                 uploadProgress.textContent = '';
+                videoProgress.textContent = '';
             } catch (err) {
                 formMessage.textContent = 'Error: ' + err.message;
                 formMessage.classList.add('text-red-400');
             }
         }
 
-        function resetProductForm() {
+        function resetForm() {
             productName.value = '';
             productPrice.value = '';
             productDesc.value = '';
@@ -265,11 +278,13 @@
             productIcon.value = 'fa-microchip';
             mainImageUrl.value = '';
             extraImagesUrls.value = '';
-            productVideo.value = '';
+            productVideoUrl.value = '';
             mainImageUpload.value = '';
             extraImagesUpload.value = '';
+            videoUpload.value = '';
             pendingMainImage = null;
             pendingExtraImages = [];
+            pendingVideoFile = null;
             editingProductId = null;
             formTitle.textContent = 'Add New Product';
             cancelBtn.classList.add('hidden');
@@ -285,9 +300,9 @@
                 div.innerHTML = `
                     <div class="flex-1">
                         <strong>${escapeHtml(prod.name)}</strong> - ${escapeHtml(prod.price)}
-                        <div class="text-sm text-gray-400">${escapeHtml(prod.desc?.substring(0, 60))}</div>
-                        ${prod.image ? `<img src="${escapeHtml(prod.image)}" class="image-preview mt-2" alt="main">` : ''}
-                        <div class="text-xs text-gray-500">${prod.images?.length || 0} extra images | ${prod.videoUrl ? 'video' : 'no video'}</div>
+                        <div class="text-sm text-gray-400">${escapeHtml(prod.desc?.substring(0,60))}</div>
+                        ${prod.image ? `<img src="${escapeHtml(prod.image)}" class="image-preview mt-2">` : ''}
+                        <div class="text-xs text-gray-500">${prod.images?.length || 0} extra images | ${prod.videoUrl ? '✓ video' : 'no video'}</div>
                     </div>
                     <div class="flex gap-2">
                         <button class="edit-product-btn edit-btn text-white px-3 py-1 rounded-lg text-sm" data-id="${docSnap.id}">Edit</button>
@@ -310,7 +325,7 @@
                         productIcon.value = prod.icon || 'fa-microchip';
                         mainImageUrl.value = prod.image || '';
                         extraImagesUrls.value = (prod.images || []).join('\n');
-                        productVideo.value = prod.videoUrl || '';
+                        productVideoUrl.value = prod.videoUrl || '';
                         editingProductId = id;
                         formTitle.textContent = 'Edit Product';
                         cancelBtn.classList.remove('hidden');
@@ -336,14 +351,14 @@
             snapshot.forEach(docSnap => {
                 const order = docSnap.data();
                 const cust = order.customer || {};
-                ordersListDiv.innerHTML += `<div class="order-item"><div><strong>${cust.name}</strong> (${cust.email})<br>${order.product?.name} - ${order.product?.price}<br>${order.status || 'pending'}</div><button class="delete-btn" data-id="${docSnap.id}">Delete</button></div>`;
+                ordersListDiv.innerHTML += `<div class="product-item"><div><strong>${cust.name}</strong> (${cust.email})<br>${order.product?.name} - ${order.product?.price}<br>Status: ${order.status || 'pending'}</div><button class="delete-btn" data-id="${docSnap.id}">Delete</button></div>`;
             });
             document.querySelectorAll('.delete-btn[data-id]').forEach(btn => {
                 btn.onclick = async () => { await deleteDoc(doc(db, 'orders', btn.getAttribute('data-id'))); loadOrders(); };
             });
         }
 
-        async function loadSettings() { /* similar to before */ }
+        async function loadSettings() { /* not needed full, but keep */ }
         async function saveSettings() { 
             const data = { heroTitleLine1: document.getElementById('hero-title-line1').value };
             await setDoc(doc(db, 'settings', 'website'), data);
@@ -353,8 +368,9 @@
         // Event listeners
         mainImageUpload.addEventListener('change', (e) => { pendingMainImage = e.target.files[0]; });
         extraImagesUpload.addEventListener('change', (e) => { pendingExtraImages = Array.from(e.target.files); });
+        videoUpload.addEventListener('change', (e) => { pendingVideoFile = e.target.files[0]; });
         saveBtn.onclick = saveProduct;
-        cancelBtn.onclick = resetProductForm;
+        cancelBtn.onclick = resetForm;
         document.getElementById('save-settings-btn').onclick = saveSettings;
 
         function setActiveTab(tab) {
