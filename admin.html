@@ -3,29 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maaz Admin - Full CMS</title>
+    <title>Maaz Admin - Complete Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body { background: #0a0a0a; color: white; font-family: 'Inter', sans-serif; }
         .card { background: rgba(30,30,30,0.9); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 1.5rem; margin-bottom: 1.5rem; }
-        input, textarea, select { background: #1f1f1f; border: 1px solid #333; color: white; border-radius: 12px; padding: 0.75rem; width: 100%; margin-bottom: 0.75rem; }
+        input, textarea, select { background: #1f1f1f; border: 1px solid #333; color: white; border-radius: 12px; padding: 0.75rem; width: 100%; margin-top: 0.25rem; margin-bottom: 0.5rem; }
         button { transition: all 0.2s; cursor: pointer; }
         .tab-btn { background: transparent; border: none; padding: 0.75rem 1.5rem; font-size: 1rem; border-radius: 40px; margin-right: 0.5rem; }
         .tab-btn.active { background: #3b82f6; color: white; }
-        .section { margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem; }
-        .section h3 { font-size: 1.2rem; font-weight: bold; margin-bottom: 0.75rem; }
+        .product-item, .order-item { background: #1a1a1a; border-radius: 16px; padding: 1rem; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .product-item:hover, .order-item:hover { background: #252525; }
+        .edit-btn { background: #3b82f6; padding: 0.25rem 1rem; border-radius: 20px; }
+        .delete-btn { background: #dc2626; padding: 0.25rem 1rem; border-radius: 20px; }
+        .save-btn { background: #10b981; padding: 0.5rem 1.5rem; border-radius: 40px; }
+        .cancel-btn { background: #6b7280; padding: 0.5rem 1.5rem; border-radius: 40px; }
+        .status-select { width: auto; display: inline-block; background: #1f1f1f; padding: 0.25rem; border-radius: 20px; }
+        .image-preview { max-width: 60px; max-height: 60px; border-radius: 8px; margin-left: 1rem; }
+        .upload-progress { font-size: 0.75rem; color: #aaa; margin-top: 4px; }
+        hr { border-color: rgba(255,255,255,0.1); margin: 1rem 0; }
     </style>
 </head>
 <body class="p-6">
-    <div class="max-w-6xl mx-auto">
+    <div class="max-w-7xl mx-auto">
         <!-- Login Screen -->
         <div id="login-screen" class="flex justify-center items-center min-h-screen">
             <div class="card w-full max-w-md">
                 <h2 class="text-2xl font-bold mb-6">Admin Login</h2>
-                <input type="text" id="login-username" placeholder="Username" class="mb-3">
-                <input type="password" id="login-password" placeholder="Password" class="mb-4">
-                <button id="login-btn" class="bg-blue-600 w-full py-2 rounded-xl">Login</button>
+                <input type="text" id="login-username" placeholder="Username (admin)" class="mb-3">
+                <input type="password" id="login-password" placeholder="Password (maaz123)" class="mb-4">
+                <button id="login-btn" class="bg-blue-600 hover:bg-blue-700 text-white w-full py-2 rounded-xl">Login</button>
                 <p id="login-error" class="text-red-400 text-sm mt-3 hidden"></p>
             </div>
         </div>
@@ -33,77 +41,50 @@
         <!-- Dashboard -->
         <div id="dashboard" style="display: none;">
             <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
-                <h1 class="text-3xl font-bold">Full CMS Dashboard</h1>
-                <button id="logout-btn" class="bg-red-600 px-4 py-2 rounded-xl">Logout</button>
+                <h1 class="text-3xl font-bold">Admin Dashboard</h1>
+                <button id="logout-btn" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-xl text-sm">Logout</button>
             </div>
 
             <!-- Tabs -->
-            <div class="flex gap-2 mb-6 border-b border-white/10 pb-2 flex-wrap">
+            <div class="flex gap-2 mb-6 border-b border-white/10 pb-2">
                 <button id="tab-products" class="tab-btn active">📦 Products</button>
                 <button id="tab-orders" class="tab-btn">📋 Orders</button>
-                <button id="tab-settings" class="tab-btn">⚙️ Website Settings</button>
             </div>
 
-            <!-- Products Panel (same as before) -->
+            <!-- Products Panel -->
             <div id="products-panel">
-                <div class="card"><h2 class="text-xl font-semibold mb-4" id="form-title">Add/Edit Product</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input type="text" id="product-name" placeholder="Name">
-                    <input type="text" id="product-price" placeholder="Price">
-                    <textarea id="product-desc" rows="2" placeholder="Description"></textarea>
-                    <textarea id="product-specs" rows="2" placeholder="Specs"></textarea>
-                    <input type="text" id="product-icon" placeholder="Icon (fa-microchip)">
-                    <input type="file" id="image-upload" accept="image/*">
-                    <input type="text" id="product-image-url" placeholder="Or image URL">
-                    <div id="upload-progress" class="text-xs text-gray-400"></div>
+                <!-- Add Product Form -->
+                <div class="card">
+                    <h2 class="text-xl font-semibold mb-4" id="form-title">Add New Product</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" id="product-name" placeholder="Product name *">
+                        <input type="text" id="product-price" placeholder="Price (e.g., $489)">
+                        <textarea id="product-desc" rows="2" placeholder="Short description"></textarea>
+                        <textarea id="product-specs" rows="2" placeholder="Specifications"></textarea>
+                        <input type="text" id="product-icon" placeholder="Icon (fa-microchip)" value="fa-microchip">
+                        <div>
+                            <input type="file" id="image-upload" accept="image/*">
+                            <div id="upload-progress" class="upload-progress"></div>
+                        </div>
+                        <input type="text" id="product-image-url" placeholder="Or paste image URL">
+                    </div>
+                    <div class="flex gap-3 mt-4">
+                        <button id="save-product-btn" class="save-btn">Save Product</button>
+                        <button id="cancel-edit" class="cancel-btn hidden">Cancel</button>
+                    </div>
+                    <p id="form-message" class="text-sm mt-3"></p>
                 </div>
-                <div class="flex gap-3 mt-4"><button id="save-product-btn" class="bg-green-600 px-6 py-2 rounded-xl">Save</button><button id="cancel-edit" class="bg-gray-600 px-6 py-2 rounded-xl hidden">Cancel</button></div>
-                <p id="form-message" class="text-sm mt-3"></p></div>
-                <h2 class="text-xl font-semibold mb-3">Products List</h2><div id="products-list" class="space-y-2"></div>
+
+                <!-- Products List -->
+                <h2 class="text-xl font-semibold mb-3">All Products</h2>
+                <div id="products-list" class="space-y-2"></div>
             </div>
 
-            <!-- Orders Panel -->
-            <div id="orders-panel" style="display: none;"><div class="card"><h2 class="text-xl font-semibold mb-4">All Orders</h2><div id="orders-list"></div></div></div>
-
-            <!-- Website Settings Panel -->
-            <div id="settings-panel" style="display: none;">
+            <!-- Orders Panel (hidden initially) -->
+            <div id="orders-panel" style="display: none;">
                 <div class="card">
-                    <h2 class="text-xl font-semibold mb-4">Home Page Settings</h2>
-                    <div class="section"><h3>Hero Section</h3>
-                        <input type="text" id="hero-title-line1" placeholder="First line (e.g., MaaZ)">
-                        <input type="text" id="hero-title-line2" placeholder="Second line (e.g., visions.)">
-                        <textarea id="hero-tagline" rows="2" placeholder="Tagline text"></textarea>
-                        <input type="text" id="hero-btn-text" placeholder="Button text (e.g., Explore collection →)">
-                    </div>
-                    <div class="section"><h3>Best Sellers Section</h3>
-                        <input type="text" id="bestsellers-title" placeholder="Title">
-                        <input type="text" id="bestsellers-subtitle" placeholder="Subtitle">
-                    </div>
-                    <div class="section"><h3>Other Collection Section</h3>
-                        <input type="text" id="other-title" placeholder="Title">
-                        <input type="text" id="other-subtitle" placeholder="Subtitle">
-                    </div>
-                    <div class="section"><h3>Philosophy Page</h3>
-                        <input type="text" id="philosophy-title" placeholder="Main heading">
-                        <textarea id="philosophy-desc" rows="3" placeholder="Philosophy description text"></textarea>
-                        <div class="grid grid-cols-3 gap-2 mt-2">
-                            <input type="text" id="pillar1-title" placeholder="Pillar 1 title"><input type="text" id="pillar1-desc" placeholder="Pillar 1 desc">
-                            <input type="text" id="pillar2-title" placeholder="Pillar 2 title"><input type="text" id="pillar2-desc" placeholder="Pillar 2 desc">
-                            <input type="text" id="pillar3-title" placeholder="Pillar 3 title"><input type="text" id="pillar3-desc" placeholder="Pillar 3 desc">
-                        </div>
-                    </div>
-                    <div class="section"><h3>Contact Page</h3>
-                        <input type="text" id="contact-heading" placeholder="Heading">
-                        <input type="text" id="contact-email" placeholder="Email">
-                        <input type="text" id="contact-address" placeholder="Address">
-                        <input type="text" id="contact-phone" placeholder="Phone">
-                        <div class="flex gap-2 mt-2"><input type="text" id="social-instagram" placeholder="Instagram URL"><input type="text" id="social-twitter" placeholder="Twitter URL"><input type="text" id="social-linkedin" placeholder="LinkedIn URL"></div>
-                    </div>
-                    <div class="section"><h3>Footer</h3>
-                        <input type="text" id="footer-text" placeholder="Footer copyright text">
-                    </div>
-                    <button id="save-settings-btn" class="bg-blue-600 w-full py-2 rounded-xl mt-2">Save All Settings</button>
-                    <p id="settings-message" class="text-sm mt-2"></p>
+                    <h2 class="text-xl font-semibold mb-4">All Customer Orders</h2>
+                    <div id="orders-list" class="space-y-2"></div>
                 </div>
             </div>
         </div>
@@ -120,21 +101,26 @@
     </script>
     <script type="module">
         import { initializeApp } from "firebase/app";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, getDoc, query, orderBy, setDoc } from "firebase/firestore";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, getDoc, query, orderBy } from "firebase/firestore";
         import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
+        // Firebase config (your existing)
         const firebaseConfig = {
             apiKey: "AIzaSyCyG5fwhCstTKBVjwz5j3D6UHvDHyho8J0",
             authDomain: "dmaaz-da461.firebaseapp.com",
+            databaseURL: "https://dmaaz-da461-default-rtdb.firebaseio.com",
             projectId: "dmaaz-da461",
             storageBucket: "dmaaz-da461.firebasestorage.app",
             messagingSenderId: "86883298773",
-            appId: "1:86883298773:web:13743b90f7f7023955615c"
+            appId: "1:86883298773:web:13743b90f7f7023955615c",
+            measurementId: "G-7GGQYKJSPE"
         };
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const storage = getStorage(app);
 
+        // Hardcoded login
         const VALID_USERNAME = "admin";
         const VALID_PASSWORD = "maaz123";
 
@@ -144,117 +130,264 @@
         const loginBtn = document.getElementById('login-btn');
         const loginError = document.getElementById('login-error');
         const logoutBtn = document.getElementById('logout-btn');
+
+        // Tabs
         const tabProducts = document.getElementById('tab-products');
         const tabOrders = document.getElementById('tab-orders');
-        const tabSettings = document.getElementById('tab-settings');
         const productsPanel = document.getElementById('products-panel');
         const ordersPanel = document.getElementById('orders-panel');
-        const settingsPanel = document.getElementById('settings-panel');
 
-        // --- Product management (same as before, shortened for brevity - keep your existing product code here) ---
-        // For space, I'll only show the settings part. The full code (product & orders) must be included.
-        // In the final answer I will provide the complete `admin.html` file. This is a summary.
-        
-        // --- Load settings from Firestore ---
-        async function loadSettings() {
-            const docRef = doc(db, 'settings', 'website');
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                document.getElementById('hero-title-line1').value = data.heroTitleLine1 || 'MaaZ';
-                document.getElementById('hero-title-line2').value = data.heroTitleLine2 || 'visions.';
-                document.getElementById('hero-tagline').value = data.heroTagline || 'Where minimalism meets in designed to reshape perception.';
-                document.getElementById('hero-btn-text').value = data.heroBtnText || 'Explore collection →';
-                document.getElementById('bestsellers-title').value = data.bestSellersTitle || 'Best Sellers';
-                document.getElementById('bestsellers-subtitle').value = data.bestSellersSubtitle || 'Most loved by our community';
-                document.getElementById('other-title').value = data.otherTitle || 'Other Collection';
-                document.getElementById('other-subtitle').value = data.otherSubtitle || 'Discover more signature artefacts';
-                document.getElementById('philosophy-title').value = data.philosophyTitle || 'Design as a dialogue.';
-                document.getElementById('philosophy-desc').value = data.philosophyDesc || 'Every Maaz product merges tactile elegance...';
-                document.getElementById('pillar1-title').value = data.pillar1Title || 'Precision';
-                document.getElementById('pillar1-desc').value = data.pillar1Desc || 'Crafted with obsessive attention.';
-                document.getElementById('pillar2-title').value = data.pillar2Title || 'Simplicity';
-                document.getElementById('pillar2-desc').value = data.pillar2Desc || 'Removing the unnecessary.';
-                document.getElementById('pillar3-title').value = data.pillar3Title || 'Evolution';
-                document.getElementById('pillar3-desc').value = data.pillar3Desc || 'Constant refinement.';
-                document.getElementById('contact-heading').value = data.contactHeading || 'Shape the future.';
-                document.getElementById('contact-email').value = data.contactEmail || 'hello@maaz.studio';
-                document.getElementById('contact-address').value = data.contactAddress || 'San Francisco, CA';
-                document.getElementById('contact-phone').value = data.contactPhone || '+1 234 567 890';
-                document.getElementById('social-instagram').value = data.socialInstagram || 'https://instagram.com';
-                document.getElementById('social-twitter').value = data.socialTwitter || 'https://twitter.com';
-                document.getElementById('social-linkedin').value = data.socialLinkedin || 'https://linkedin.com';
-                document.getElementById('footer-text').value = data.footerText || '© 2026 Maaz — designed to reshape perception.';
-            } else {
-                // default hardcoded values fill the form
-            }
-        }
+        // Product form elements
+        const productName = document.getElementById('product-name');
+        const productPrice = document.getElementById('product-price');
+        const productDesc = document.getElementById('product-desc');
+        const productSpecs = document.getElementById('product-specs');
+        const productIcon = document.getElementById('product-icon');
+        const imageUpload = document.getElementById('image-upload');
+        const uploadProgress = document.getElementById('upload-progress');
+        const productImageUrl = document.getElementById('product-image-url');
+        const saveBtn = document.getElementById('save-product-btn');
+        const cancelEditBtn = document.getElementById('cancel-edit');
+        const formTitle = document.getElementById('form-title');
+        const formMessage = document.getElementById('form-message');
+        const productsListDiv = document.getElementById('products-list');
+        const ordersListDiv = document.getElementById('orders-list');
 
-        async function saveSettings() {
-            const settingsData = {
-                heroTitleLine1: document.getElementById('hero-title-line1').value,
-                heroTitleLine2: document.getElementById('hero-title-line2').value,
-                heroTagline: document.getElementById('hero-tagline').value,
-                heroBtnText: document.getElementById('hero-btn-text').value,
-                bestSellersTitle: document.getElementById('bestsellers-title').value,
-                bestSellersSubtitle: document.getElementById('bestsellers-subtitle').value,
-                otherTitle: document.getElementById('other-title').value,
-                otherSubtitle: document.getElementById('other-subtitle').value,
-                philosophyTitle: document.getElementById('philosophy-title').value,
-                philosophyDesc: document.getElementById('philosophy-desc').value,
-                pillar1Title: document.getElementById('pillar1-title').value,
-                pillar1Desc: document.getElementById('pillar1-desc').value,
-                pillar2Title: document.getElementById('pillar2-title').value,
-                pillar2Desc: document.getElementById('pillar2-desc').value,
-                pillar3Title: document.getElementById('pillar3-title').value,
-                pillar3Desc: document.getElementById('pillar3-desc').value,
-                contactHeading: document.getElementById('contact-heading').value,
-                contactEmail: document.getElementById('contact-email').value,
-                contactAddress: document.getElementById('contact-address').value,
-                contactPhone: document.getElementById('contact-phone').value,
-                socialInstagram: document.getElementById('social-instagram').value,
-                socialTwitter: document.getElementById('social-twitter').value,
-                socialLinkedin: document.getElementById('social-linkedin').value,
-                footerText: document.getElementById('footer-text').value,
-                updatedAt: new Date().toISOString()
-            };
-            await setDoc(doc(db, 'settings', 'website'), settingsData);
-            document.getElementById('settings-message').textContent = 'Settings saved!';
-            setTimeout(() => { document.getElementById('settings-message').textContent = ''; }, 2000);
-        }
+        let editingProductId = null;
+        let pendingImageFile = null;
 
-        // Tab switching
-        tabProducts.onclick = () => { setActiveTab('products'); };
-        tabOrders.onclick = () => { setActiveTab('orders'); loadOrders(); };
-        tabSettings.onclick = () => { setActiveTab('settings'); loadSettings(); };
-
-        function setActiveTab(tab) {
-            [tabProducts, tabOrders, tabSettings].forEach(t => t.classList.remove('active'));
-            if (tab === 'products') tabProducts.classList.add('active');
-            if (tab === 'orders') tabOrders.classList.add('active');
-            if (tab === 'settings') tabSettings.classList.add('active');
-            productsPanel.style.display = tab === 'products' ? 'block' : 'none';
-            ordersPanel.style.display = tab === 'orders' ? 'block' : 'none';
-            settingsPanel.style.display = tab === 'settings' ? 'block' : 'none';
-        }
-
-        // Simplified login and other functions (products, orders) – include full code from previous answer.
-        // For final file, I'll combine everything.
-        
+        // Login logic
         loginBtn.onclick = () => {
-            const u = document.getElementById('login-username').value;
-            const p = document.getElementById('login-password').value;
-            if (u === VALID_USERNAME && p === VALID_PASSWORD) {
+            const user = document.getElementById('login-username').value;
+            const pass = document.getElementById('login-password').value;
+            if (user === VALID_USERNAME && pass === VALID_PASSWORD) {
                 loginScreen.style.display = 'none';
                 dashboard.style.display = 'block';
-                setActiveTab('products');
-                loadProducts(); // function from before
+                loadProducts();
                 loadOrders();
-            } else loginError.classList.remove('hidden');
+                loginError.classList.add('hidden');
+            } else {
+                loginError.textContent = "Invalid. Use admin / maaz123";
+                loginError.classList.remove('hidden');
+            }
         };
-        logoutBtn.onclick = () => { loginScreen.style.display = 'flex'; dashboard.style.display = 'none'; };
-        document.getElementById('save-settings-btn').onclick = saveSettings;
-        // ... rest of product and order functions (copy from previous admin.html)
+        logoutBtn.onclick = () => {
+            loginScreen.style.display = 'flex';
+            dashboard.style.display = 'none';
+            resetForm();
+        };
+
+        // Tab switching
+        tabProducts.onclick = () => {
+            tabProducts.classList.add('active');
+            tabOrders.classList.remove('active');
+            productsPanel.style.display = 'block';
+            ordersPanel.style.display = 'none';
+        };
+        tabOrders.onclick = () => {
+            tabOrders.classList.add('active');
+            tabProducts.classList.remove('active');
+            ordersPanel.style.display = 'block';
+            productsPanel.style.display = 'none';
+            loadOrders(); // refresh when tab opens
+        };
+
+        // Image upload handler
+        imageUpload.addEventListener('change', (e) => {
+            pendingImageFile = e.target.files[0] || null;
+            if (pendingImageFile) uploadProgress.textContent = `Selected: ${pendingImageFile.name}`;
+            else uploadProgress.textContent = '';
+        });
+
+        async function uploadImage(file) {
+            if (!file) return null;
+            const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
+            const uploadTask = uploadBytesResumable(storageRef, file);
+            return new Promise((resolve, reject) => {
+                uploadTask.on('state_changed',
+                    (snapshot) => {
+                        const percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        uploadProgress.textContent = `Uploading ${Math.round(percent)}%`;
+                    },
+                    reject,
+                    async () => {
+                        const url = await getDownloadURL(uploadTask.snapshot.ref);
+                        uploadProgress.textContent = 'Upload complete!';
+                        resolve(url);
+                    }
+                );
+            });
+        }
+
+        // Save product (create or update)
+        saveBtn.onclick = async () => {
+            const name = productName.value.trim();
+            const price = productPrice.value.trim();
+            const desc = productDesc.value.trim();
+            const specs = productSpecs.value.trim();
+            const icon = productIcon.value.trim() || 'fa-microchip';
+            let image = productImageUrl.value.trim();
+
+            if (!name || !price) {
+                formMessage.textContent = 'Name and price are required';
+                formMessage.classList.add('text-red-400');
+                return;
+            }
+
+            formMessage.textContent = 'Saving...';
+            formMessage.classList.remove('text-red-400', 'text-green-400');
+
+            try {
+                if (pendingImageFile) {
+                    image = await uploadImage(pendingImageFile);
+                    productImageUrl.value = image;
+                    pendingImageFile = null;
+                    imageUpload.value = '';
+                }
+                const productData = { name, price, desc, specs, icon, image: image || '' };
+                if (editingProductId) {
+                    await updateDoc(doc(db, 'products', editingProductId), productData);
+                    formMessage.textContent = 'Product updated!';
+                } else {
+                    await addDoc(collection(db, 'products'), productData);
+                    formMessage.textContent = 'Product added!';
+                }
+                formMessage.classList.add('text-green-400');
+                resetForm();
+                loadProducts();
+            } catch (err) {
+                formMessage.textContent = 'Error: ' + err.message;
+                formMessage.classList.add('text-red-400');
+            }
+        };
+
+        function resetForm() {
+            productName.value = '';
+            productPrice.value = '';
+            productDesc.value = '';
+            productSpecs.value = '';
+            productIcon.value = 'fa-microchip';
+            productImageUrl.value = '';
+            imageUpload.value = '';
+            pendingImageFile = null;
+            uploadProgress.textContent = '';
+            editingProductId = null;
+            formTitle.textContent = 'Add New Product';
+            cancelEditBtn.classList.add('hidden');
+        }
+        cancelEditBtn.onclick = resetForm;
+
+        // Load products
+        async function loadProducts() {
+            const snapshot = await getDocs(collection(db, 'products'));
+            productsListDiv.innerHTML = '';
+            for (const docSnap of snapshot.docs) {
+                const prod = docSnap.data();
+                const div = document.createElement('div');
+                div.className = 'product-item';
+                div.innerHTML = `
+                    <div class="flex-1">
+                        <strong>${escapeHtml(prod.name)}</strong> - ${escapeHtml(prod.price)}
+                        <div class="text-sm text-gray-400">${escapeHtml(prod.desc?.substring(0, 80))}</div>
+                        ${prod.image ? `<img src="${escapeHtml(prod.image)}" class="image-preview" alt="preview">` : ''}
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="edit-product-btn edit-btn text-white px-3 py-1 rounded-lg text-sm" data-id="${docSnap.id}">Edit</button>
+                        <button class="delete-product-btn delete-btn text-white px-3 py-1 rounded-lg text-sm" data-id="${docSnap.id}">Delete</button>
+                    </div>
+                `;
+                productsListDiv.appendChild(div);
+            }
+            // attach edit events
+            document.querySelectorAll('.edit-product-btn').forEach(btn => {
+                btn.onclick = async () => {
+                    const id = btn.getAttribute('data-id');
+                    const docRef = doc(db, 'products', id);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        const prod = docSnap.data();
+                        productName.value = prod.name;
+                        productPrice.value = prod.price;
+                        productDesc.value = prod.desc || '';
+                        productSpecs.value = prod.specs || '';
+                        productIcon.value = prod.icon || 'fa-microchip';
+                        productImageUrl.value = prod.image || '';
+                        editingProductId = id;
+                        formTitle.textContent = 'Edit Product';
+                        cancelEditBtn.classList.remove('hidden');
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                };
+            });
+            document.querySelectorAll('.delete-product-btn').forEach(btn => {
+                btn.onclick = async () => {
+                    if (confirm('Delete this product?')) {
+                        await deleteDoc(doc(db, 'products', btn.getAttribute('data-id')));
+                        loadProducts();
+                    }
+                };
+            });
+        }
+
+        // Load orders
+        async function loadOrders() {
+            const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'));
+            const snapshot = await getDocs(q);
+            ordersListDiv.innerHTML = '';
+            if (snapshot.empty) {
+                ordersListDiv.innerHTML = '<p class="text-center text-white/50">No orders yet.</p>';
+                return;
+            }
+            for (const docSnap of snapshot.docs) {
+                const order = docSnap.data();
+                const orderId = docSnap.id;
+                const customer = order.customer || {};
+                const product = order.product || {};
+                const status = order.status || 'pending';
+                const div = document.createElement('div');
+                div.className = 'order-item';
+                div.innerHTML = `
+                    <div class="flex-1">
+                        <div><strong>${escapeHtml(customer.name)}</strong> (${escapeHtml(customer.email)})</div>
+                        <div class="text-sm">📞 ${escapeHtml(customer.phone)} | 🏠 ${escapeHtml(customer.address)}</div>
+                        <div class="text-sm">🛍️ ${escapeHtml(product.name)} - ${escapeHtml(product.price)} | 💳 ${escapeHtml(customer.paymentMethod)}</div>
+                        <div class="text-xs text-gray-400 mt-1">Order ID: ${escapeHtml(order.orderId || orderId)}</div>
+                    </div>
+                    <div class="flex flex-col gap-2 items-end">
+                        <select class="status-select status-dropdown bg-gray-700 px-2 py-1 rounded-lg text-sm" data-id="${orderId}">
+                            <option value="pending" ${status === 'pending' ? 'selected' : ''}>⏳ Pending</option>
+                            <option value="processing" ${status === 'processing' ? 'selected' : ''}>🔧 Processing</option>
+                            <option value="shipped" ${status === 'shipped' ? 'selected' : ''}>🚚 Shipped</option>
+                            <option value="delivered" ${status === 'delivered' ? 'selected' : ''}>✅ Delivered</option>
+                            <option value="cancelled" ${status === 'cancelled' ? 'selected' : ''}>❌ Cancelled</option>
+                        </select>
+                        <button class="delete-order-btn delete-btn text-white px-3 py-1 rounded-lg text-sm" data-id="${orderId}">Delete Order</button>
+                    </div>
+                `;
+                ordersListDiv.appendChild(div);
+            }
+
+            // Attach status change events
+            document.querySelectorAll('.status-dropdown').forEach(select => {
+                select.onchange = async (e) => {
+                    const orderId = select.getAttribute('data-id');
+                    const newStatus = select.value;
+                    await updateDoc(doc(db, 'orders', orderId), { status: newStatus });
+                    loadOrders(); // refresh
+                };
+            });
+            // Attach delete events
+            document.querySelectorAll('.delete-order-btn').forEach(btn => {
+                btn.onclick = async () => {
+                    if (confirm('Delete this order? This cannot be undone.')) {
+                        await deleteDoc(doc(db, 'orders', btn.getAttribute('data-id')));
+                        loadOrders();
+                    }
+                };
+            });
+        }
+
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
     </script>
 </body>
 </html>
