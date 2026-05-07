@@ -20,7 +20,6 @@
 </head>
 <body class="p-6">
     <div class="max-w-6xl mx-auto">
-        <!-- Login -->
         <div id="login-screen" class="flex justify-center items-center min-h-screen">
             <div class="card w-full max-w-md">
                 <h2 class="text-2xl font-bold mb-6">Admin Login</h2>
@@ -31,7 +30,6 @@
             </div>
         </div>
 
-        <!-- Dashboard -->
         <div id="dashboard" style="display: none;">
             <div class="flex justify-between items-center mb-8">
                 <h1 class="text-3xl font-bold">Product Manager</h1>
@@ -73,7 +71,6 @@
         import { initializeApp } from "firebase/app";
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, getDoc } from "firebase/firestore";
 
-        // Firebase config (your existing one)
         const firebaseConfig = {
             apiKey: "AIzaSyCyG5fwhCstTKBVjwz5j3D6UHvDHyho8J0",
             authDomain: "dmaaz-da461.firebaseapp.com",
@@ -88,11 +85,11 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Cloudinary settings (REPLACE WITH YOURS)
-        const CLOUD_NAME = "YOUR_CLOUD_NAME";      // e.g., "dzx7q5k8v"
-        const UPLOAD_PRESET = "product_images";    // the unsigned preset you created
+        // ========== YOUR CLOUDINARY SETTINGS (ALREADY FILLED) ==========
+        const CLOUD_NAME = "djfyusbqm";
+        const UPLOAD_PRESET = "product_images";
+        // ================================================================
 
-        // DOM elements
         const loginScreen = document.getElementById('login-screen');
         const dashboard = document.getElementById('dashboard');
         const loginBtn = document.getElementById('login-btn');
@@ -114,7 +111,6 @@
         let editingProductId = null;
         let pendingImageFile = null;
 
-        // Hardcoded login
         const VALID_USERNAME = "admin";
         const VALID_PASSWORD = "maaz123";
 
@@ -143,7 +139,6 @@
             else uploadProgress.textContent = '';
         });
 
-        // Upload to Cloudinary
         async function uploadToCloudinary(file) {
             if (!file) return null;
             const url = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
@@ -175,7 +170,6 @@
             });
         }
 
-        // Save product (with optional Cloudinary upload)
         saveBtn.onclick = async () => {
             const name = productName.value.trim();
             const price = productPrice.value.trim();
