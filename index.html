@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Maaz — Product Detail Working + 3D</title>
+  <title>Maaz — Complete Working Site</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -26,7 +26,7 @@
     .page.active { display: block; }
     .toast { position: fixed; bottom: 20px; right: 20px; background: #1f1f1f; padding: 0.5rem 1rem; border-radius: 20px; z-index: 1000; opacity: 0; transition: 0.3s; color: white; }
     nav { position: fixed; top: 0; left: 0; width: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(12px); padding: 1rem 2rem; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
-    .nav-link { color: white; text-decoration: none; margin-left: 1.5rem; }
+    .nav-link { color: white; text-decoration: none; margin-left: 1.5rem; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -36,10 +36,10 @@
 <nav>
   <div class="text-2xl font-bold">MAAZ</div>
   <div>
-    <a href="#" data-page="home" class="nav-link page-link">Home</a>
-    <a href="#" data-page="products" class="nav-link page-link">Products</a>
-    <a href="#" data-page="wishlist" class="nav-link page-link">Wishlist</a>
-    <a href="#" data-page="orders" class="nav-link page-link">Orders</a>
+    <span class="nav-link" data-page="home">Home</span>
+    <span class="nav-link" data-page="products">Products</span>
+    <span class="nav-link" data-page="wishlist">Wishlist</span>
+    <span class="nav-link" data-page="orders">Orders</span>
   </div>
 </nav>
 
@@ -49,7 +49,7 @@
     <div class="text-center py-20">
       <h1 class="text-6xl md:text-8xl font-bold">MaaZ visions.</h1>
       <p class="text-xl mt-4 text-white/70">Where minimalism meets designed to reshape perception.</p>
-      <div class="mt-8"><a href="#" data-page="products" class="page-link bg-white text-black px-6 py-2 rounded-full inline-block">Explore →</a></div>
+      <div class="mt-8"><span class="bg-white text-black px-6 py-2 rounded-full inline-block cursor-pointer" data-page="products">Explore →</span></div>
     </div>
     <h2 class="text-3xl font-bold mt-10">Best Sellers</h2>
     <div id="best-selling-grid" class="product-grid mt-6"></div>
@@ -84,13 +84,42 @@
 </div>
 
 <!-- Wishlist Page -->
-<div id="wishlist-page" class="page"><div class="max-w-4xl mx-auto"><h2 class="text-3xl font-bold">My Wishlist</h2><div id="wishlist-items-container" class="mt-4"></div><p id="empty-wishlist" class="text-white/50 hidden">Empty</p></div></div>
+<div id="wishlist-page" class="page">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="text-3xl font-bold">My Wishlist</h2>
+    <div id="wishlist-items-container" class="mt-4"></div>
+    <p id="empty-wishlist" class="text-white/50 hidden">Your wishlist is empty.</p>
+  </div>
+</div>
 
 <!-- Orders Page -->
-<div id="orders-page" class="page"><div class="max-w-4xl mx-auto"><h2 class="text-3xl font-bold">My Orders</h2><input type="email" id="order-email" placeholder="Your email" class="w-full p-2 bg-white/10 rounded mt-4 mb-2"><button id="lookup-orders" class="bg-blue-600 px-4 py-2 rounded">Search</button><div id="orders-list" class="mt-4"></div><p id="no-orders" class="text-white/50 hidden">No orders</p></div></div>
+<div id="orders-page" class="page">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="text-3xl font-bold">My Orders</h2>
+    <input type="email" id="order-email" placeholder="Your email address" class="w-full p-2 bg-white/10 rounded mt-4 mb-2">
+    <button id="lookup-orders" class="bg-blue-600 px-4 py-2 rounded">Search</button>
+    <div id="orders-list" class="mt-4"></div>
+    <p id="no-orders" class="text-white/50 hidden">No orders found.</p>
+  </div>
+</div>
 
-<!-- Checkout Modal (same as before) -->
-<div id="checkout-modal" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center;"><div class="bg-black p-6 rounded-2xl max-w-md w-full"><span class="float-right cursor-pointer text-xl close-checkout">&times;</span><h2 class="text-2xl font-bold mb-4">Complete Order</h2><form id="checkout-form"><input type="text" id="checkout-name" placeholder="Full Name" required class="w-full p-2 mb-2 bg-gray-800 rounded"><input type="email" id="checkout-email" placeholder="Email" required class="w-full p-2 mb-2 bg-gray-800 rounded"><input type="tel" id="checkout-phone" placeholder="Phone" required class="w-full p-2 mb-2 bg-gray-800 rounded"><textarea id="checkout-address" rows="2" placeholder="Address" required class="w-full p-2 mb-2 bg-gray-800 rounded"></textarea><select id="checkout-payment" class="w-full p-2 mb-4 bg-gray-800 rounded"><option>Cash on Delivery</option></select><div id="checkout-product-info" class="text-sm mb-3"></div><button type="submit" class="bg-green-600 w-full py-2 rounded">Place Order</button></form><p id="order-feedback" class="text-sm mt-2 text-center text-green-400 hidden"></p></div></div>
+<!-- Checkout Modal -->
+<div id="checkout-modal" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center;">
+  <div class="bg-black p-6 rounded-2xl max-w-md w-full">
+    <span class="float-right cursor-pointer text-xl close-checkout">&times;</span>
+    <h2 class="text-2xl font-bold mb-4">Complete Order</h2>
+    <form id="checkout-form">
+      <input type="text" id="checkout-name" placeholder="Full Name" required class="w-full p-2 mb-2 bg-gray-800 rounded">
+      <input type="email" id="checkout-email" placeholder="Email" required class="w-full p-2 mb-2 bg-gray-800 rounded">
+      <input type="tel" id="checkout-phone" placeholder="Phone" required class="w-full p-2 mb-2 bg-gray-800 rounded">
+      <textarea id="checkout-address" rows="2" placeholder="Address" required class="w-full p-2 mb-2 bg-gray-800 rounded"></textarea>
+      <select id="checkout-payment" class="w-full p-2 mb-4 bg-gray-800 rounded"><option>Cash on Delivery</option></select>
+      <div id="checkout-product-info" class="text-sm mb-3"></div>
+      <button type="submit" class="bg-green-600 w-full py-2 rounded">Place Order</button>
+    </form>
+    <p id="order-feedback" class="text-sm mt-2 text-center text-green-400 hidden"></p>
+  </div>
+</div>
 
 <script type="importmap">
   {
@@ -120,7 +149,7 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // 3D Background (simple torus knot + particles)
+  // 3D Background
   const container = document.getElementById('canvas-container');
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x050510);
@@ -181,22 +210,19 @@
   }
   function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
 
-  // Render product grid (using inline onclick)
+  // Render product grid with inline onclick binding using custom attribute
   function renderProductCard(product, isBestSeller = false) {
+    const dataAttr = escapeHtml(JSON.stringify(product));
     return `
       <div class="product-card">
         ${isBestSeller ? '<div class="bg-yellow-500 text-black text-xs px-2 py-1 rounded-full absolute top-2 right-2">Best Seller</div>' : ''}
         ${product.image ? `<img src="${escapeHtml(product.image)}" class="card-image">` : `<div class="w-full h-56 bg-gray-800 rounded-2xl flex items-center justify-center text-5xl mb-4"><i class="fas ${product.icon || 'fa-microchip'}"></i></div>`}
         <h3 class="text-xl font-bold">${escapeHtml(product.name)}</h3>
         <p class="text-white/60">${escapeHtml(product.price)}</p>
-        <button class="view-detail-btn mt-3 bg-blue-600 px-4 py-1 rounded-full text-sm" onclick="window.dispatchEvent(new CustomEvent('viewDetail', { detail: ${JSON.stringify(product).replace(/"/g, '&quot;')} }))">View Details</button>
+        <button class="view-detail-btn mt-3 bg-blue-600 px-4 py-1 rounded-full text-sm" data-product='${dataAttr}'>View Details</button>
       </div>
     `;
   }
-
-  window.addEventListener('viewDetail', (e) => {
-    showProductDetail(e.detail);
-  });
 
   async function loadProducts() {
     const snapshot = await getDocs(collection(db, 'products'));
@@ -207,17 +233,25 @@
     document.getElementById('best-selling-grid').innerHTML = best.map(p => renderProductCard(p, true)).join('');
     document.getElementById('other-collection-grid').innerHTML = other.map(p => renderProductCard(p)).join('');
     document.getElementById('all-products-grid').innerHTML = products.map(p => renderProductCard(p)).join('');
+    // Attach event listeners for View Details buttons
+    document.querySelectorAll('.view-detail-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const productData = JSON.parse(btn.getAttribute('data-product'));
+        showProductDetail(productData);
+      });
+    });
   }
 
   function showProductDetail(product) {
     document.getElementById('detail-title').innerText = product.name;
     document.getElementById('detail-price').innerText = product.price;
-    document.getElementById('detail-desc').innerText = product.desc || 'No description.';
+    document.getElementById('detail-desc').innerText = product.desc || 'No description available.';
     let specsHtml = '';
     if (product.specs) {
-      specsHtml = `<ul class="list-disc pl-5">${product.specs.split('\n').map(line => `<li>${escapeHtml(line)}</li>`).join('')}</ul>`;
+      specsHtml = `<ul class="list-disc pl-5">${product.specs.split('\n').map(line => `<li>${escapeHtml(line)}</li>`).join('')}</url>`;
     } else {
-      specsHtml = '<p>No specifications.</p>';
+      specsHtml = '<p>No specifications provided.</p>';
     }
     document.getElementById('detail-specs').innerHTML = specsHtml;
     const mediaDiv = document.getElementById('detail-media');
@@ -278,7 +312,15 @@
     const emptyMsg = document.getElementById('empty-wishlist');
     if (!items.length) { container.innerHTML = ''; emptyMsg.classList.remove('hidden'); return; }
     emptyMsg.classList.add('hidden');
-    container.innerHTML = items.map(item => `<div class="bg-white/10 p-3 rounded mb-2 flex justify-between"><div><strong>${escapeHtml(item.product.name)}</strong><br>${escapeHtml(item.product.price)}</div><div><button class="order-from-wishlist bg-blue-600 px-3 py-1 rounded" data-prod='${JSON.stringify(item.product)}'>Order</button><button class="remove-wishlist bg-red-600 px-3 py-1 rounded ml-2" data-id="${item.id}">Remove</button></div></div>`).join('');
+    container.innerHTML = items.map(item => `
+      <div class="bg-white/10 p-3 rounded mb-2 flex justify-between items-center">
+        <div><strong>${escapeHtml(item.product.name)}</strong><br>${escapeHtml(item.product.price)}</div>
+        <div>
+          <button class="order-from-wishlist bg-blue-600 px-3 py-1 rounded" data-prod='${JSON.stringify(item.product)}'>Order</button>
+          <button class="remove-wishlist bg-red-600 px-3 py-1 rounded ml-2" data-id="${item.id}">Remove</button>
+        </div>
+      </div>
+    `).join('');
     document.querySelectorAll('.order-from-wishlist').forEach(btn => btn.onclick = () => openCheckout(JSON.parse(btn.getAttribute('data-prod'))));
     document.querySelectorAll('.remove-wishlist').forEach(async btn => { btn.onclick = async () => { await deleteDoc(doc(db, 'wishlists', btn.getAttribute('data-id'))); loadWishlistPage(); }; });
   }
@@ -304,7 +346,7 @@
         createdAt: serverTimestamp(),
         orderId: Date.now().toString()
       });
-      document.getElementById('order-feedback').textContent = "Order placed!";
+      document.getElementById('order-feedback').textContent = "Order placed! We'll contact you.";
       document.getElementById('order-feedback').classList.remove('hidden');
       setTimeout(() => {
         document.getElementById('checkout-modal').style.display = 'none';
@@ -316,7 +358,7 @@
   });
   document.getElementById('lookup-orders').addEventListener('click', async () => {
     const email = document.getElementById('order-email').value.trim();
-    if (!email) { showToast("Enter email"); return; }
+    if (!email) { showToast("Enter email address"); return; }
     const q = query(collection(db, 'orders'), where('customer.email', '==', email));
     const snap = await getDocs(q);
     const orders = [];
@@ -325,7 +367,7 @@
     const no = document.getElementById('no-orders');
     if (!orders.length) { container.innerHTML = ''; no.classList.remove('hidden'); return; }
     no.classList.add('hidden');
-    container.innerHTML = orders.map(o => `<div class="bg-white/10 p-3 rounded mb-2"><strong>${o.product.name}</strong> - ${o.product.price}<br>Status: ${o.status}</div>`).join('');
+    container.innerHTML = orders.map(o => `<div class="bg-white/10 p-3 rounded mb-2"><strong>${o.product.name}</strong> - ${o.product.price}<br>Status: ${o.status || 'pending'}</div>`).join('');
   });
 
   // Page routing
@@ -342,11 +384,13 @@
     history.pushState(null, '', `#${pageId}`);
     if (pageId === 'wishlist') loadWishlistPage();
   }
-  document.querySelectorAll('.page-link').forEach(link => {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      const page = link.getAttribute('data-page');
-      if (page && pages[page]) showPage(page);
+  document.querySelectorAll('.nav-link, [data-page]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      const page = el.getAttribute('data-page');
+      if (page && pages[page]) {
+        e.preventDefault();
+        showPage(page);
+      }
     });
   });
   document.getElementById('back-to-products').addEventListener('click', () => showPage('products'));
