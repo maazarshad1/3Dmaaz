@@ -3,15 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Maaz — Product Details Working</title>
+  <title>Maaz — Product Detail Working + 3D</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; background-color: #0a0a0a; }
-    .product-card { background: rgba(20,20,20,0.8); backdrop-filter: blur(10px); border-radius: 1.5rem; padding: 1.5rem; cursor: pointer; transition: 0.3s; border: 1px solid rgba(255,255,255,0.1); }
+    body { font-family: 'Inter', sans-serif; background-color: #0a0a0a; overflow-x: hidden; }
+    #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+    .content { position: relative; z-index: 10; color: white; }
+    .product-card { background: rgba(20,20,20,0.7); backdrop-filter: blur(12px); border-radius: 1.5rem; padding: 1.5rem; cursor: pointer; transition: 0.3s; border: 1px solid rgba(255,255,255,0.15); }
     .product-card:hover { transform: translateY(-5px); background: rgba(30,30,30,0.9); }
     .card-image { width: 100%; height: 200px; object-fit: cover; border-radius: 1rem; margin-bottom: 1rem; }
     .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
@@ -23,11 +25,12 @@
     .page { display: none; min-height: 100vh; padding: 6rem 1.5rem 3rem; }
     .page.active { display: block; }
     .toast { position: fixed; bottom: 20px; right: 20px; background: #1f1f1f; padding: 0.5rem 1rem; border-radius: 20px; z-index: 1000; opacity: 0; transition: 0.3s; color: white; }
-    nav { position: fixed; top: 0; left: 0; width: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); padding: 1rem 2rem; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
+    nav { position: fixed; top: 0; left: 0; width: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(12px); padding: 1rem 2rem; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
     .nav-link { color: white; text-decoration: none; margin-left: 1.5rem; }
   </style>
 </head>
 <body>
+<div id="canvas-container"></div>
 <div id="toast-message" class="toast"></div>
 
 <nav>
@@ -81,46 +84,18 @@
 </div>
 
 <!-- Wishlist Page -->
-<div id="wishlist-page" class="page">
-  <div class="max-w-4xl mx-auto">
-    <h2 class="text-3xl font-bold">My Wishlist</h2>
-    <div id="wishlist-items-container" class="mt-4"></div>
-    <p id="empty-wishlist" class="text-white/50 hidden">Your wishlist is empty.</p>
-  </div>
-</div>
+<div id="wishlist-page" class="page"><div class="max-w-4xl mx-auto"><h2 class="text-3xl font-bold">My Wishlist</h2><div id="wishlist-items-container" class="mt-4"></div><p id="empty-wishlist" class="text-white/50 hidden">Empty</p></div></div>
 
 <!-- Orders Page -->
-<div id="orders-page" class="page">
-  <div class="max-w-4xl mx-auto">
-    <h2 class="text-3xl font-bold">My Orders</h2>
-    <input type="email" id="order-email" placeholder="Your email address" class="w-full p-2 bg-white/10 rounded mt-4 mb-2">
-    <button id="lookup-orders" class="bg-blue-600 px-4 py-2 rounded">Search</button>
-    <div id="orders-list" class="mt-4"></div>
-    <p id="no-orders" class="text-white/50 hidden">No orders found.</p>
-  </div>
-</div>
+<div id="orders-page" class="page"><div class="max-w-4xl mx-auto"><h2 class="text-3xl font-bold">My Orders</h2><input type="email" id="order-email" placeholder="Your email" class="w-full p-2 bg-white/10 rounded mt-4 mb-2"><button id="lookup-orders" class="bg-blue-600 px-4 py-2 rounded">Search</button><div id="orders-list" class="mt-4"></div><p id="no-orders" class="text-white/50 hidden">No orders</p></div></div>
 
-<!-- Checkout Modal -->
-<div id="checkout-modal" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center;">
-  <div class="bg-black p-6 rounded-2xl max-w-md w-full">
-    <span class="float-right cursor-pointer text-xl close-checkout">&times;</span>
-    <h2 class="text-2xl font-bold mb-4">Complete Order</h2>
-    <form id="checkout-form">
-      <input type="text" id="checkout-name" placeholder="Full Name" required class="w-full p-2 mb-2 bg-gray-800 rounded">
-      <input type="email" id="checkout-email" placeholder="Email" required class="w-full p-2 mb-2 bg-gray-800 rounded">
-      <input type="tel" id="checkout-phone" placeholder="Phone" required class="w-full p-2 mb-2 bg-gray-800 rounded">
-      <textarea id="checkout-address" rows="2" placeholder="Address" required class="w-full p-2 mb-2 bg-gray-800 rounded"></textarea>
-      <select id="checkout-payment" class="w-full p-2 mb-4 bg-gray-800 rounded"><option>Cash on Delivery</option></select>
-      <div id="checkout-product-info" class="text-sm mb-3"></div>
-      <button type="submit" class="bg-green-600 w-full py-2 rounded">Place Order</button>
-    </form>
-    <p id="order-feedback" class="text-sm mt-2 text-center text-green-400 hidden"></p>
-  </div>
-</div>
+<!-- Checkout Modal (same as before) -->
+<div id="checkout-modal" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center;"><div class="bg-black p-6 rounded-2xl max-w-md w-full"><span class="float-right cursor-pointer text-xl close-checkout">&times;</span><h2 class="text-2xl font-bold mb-4">Complete Order</h2><form id="checkout-form"><input type="text" id="checkout-name" placeholder="Full Name" required class="w-full p-2 mb-2 bg-gray-800 rounded"><input type="email" id="checkout-email" placeholder="Email" required class="w-full p-2 mb-2 bg-gray-800 rounded"><input type="tel" id="checkout-phone" placeholder="Phone" required class="w-full p-2 mb-2 bg-gray-800 rounded"><textarea id="checkout-address" rows="2" placeholder="Address" required class="w-full p-2 mb-2 bg-gray-800 rounded"></textarea><select id="checkout-payment" class="w-full p-2 mb-4 bg-gray-800 rounded"><option>Cash on Delivery</option></select><div id="checkout-product-info" class="text-sm mb-3"></div><button type="submit" class="bg-green-600 w-full py-2 rounded">Place Order</button></form><p id="order-feedback" class="text-sm mt-2 text-center text-green-400 hidden"></p></div></div>
 
 <script type="importmap">
   {
     "imports": {
+      "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
       "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
       "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js",
       "swiper": "https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.mjs"
@@ -128,11 +103,12 @@
   }
 </script>
 <script type="module">
+  import * as THREE from 'three';
   import { initializeApp } from "firebase/app";
   import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, query, where, orderBy, serverTimestamp } from "firebase/firestore";
   import Swiper from 'swiper';
 
-  // Firebase configuration (your existing)
+  // Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyCyG5fwhCstTKBVjwz5j3D6UHvDHyho8J0",
     authDomain: "dmaaz-da461.firebaseapp.com",
@@ -144,6 +120,55 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
+  // 3D Background (simple torus knot + particles)
+  const container = document.getElementById('canvas-container');
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x050510);
+  const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.set(0, 0.5, 10);
+  const renderer = new THREE.WebGLRenderer({ alpha: false });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  container.appendChild(renderer.domElement);
+  const geometry = new THREE.TorusKnotGeometry(1.5, 0.3, 200, 32, 3, 4);
+  const material = new THREE.MeshStandardMaterial({ color: 0x3a86ff, emissive: 0x1a44aa, emissiveIntensity: 0.4, metalness: 0.7, roughness: 0.3 });
+  const knot = new THREE.Mesh(geometry, material);
+  scene.add(knot);
+  const ambient = new THREE.AmbientLight(0x404060);
+  scene.add(ambient);
+  const light = new THREE.DirectionalLight(0xffffff, 1);
+  light.position.set(1, 2, 3);
+  scene.add(light);
+  const particlesGeo = new THREE.BufferGeometry();
+  const particleCount = 1000;
+  const posArray = new Float32Array(particleCount * 3);
+  for (let i = 0; i < particleCount; i++) {
+    posArray[i*3] = (Math.random() - 0.5) * 20;
+    posArray[i*3+1] = (Math.random() - 0.5) * 10;
+    posArray[i*3+2] = (Math.random() - 0.5) * 15 - 5;
+  }
+  particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+  const particleMat = new THREE.PointsMaterial({ color: 0x88aaff, size: 0.05 });
+  const particles = new THREE.Points(particlesGeo, particleMat);
+  scene.add(particles);
+  let time = 0;
+  function animate3D() {
+    requestAnimationFrame(animate3D);
+    time += 0.01;
+    knot.rotation.x = Math.sin(time * 0.2) * 0.2;
+    knot.rotation.y = time * 0.3;
+    particles.rotation.y = time * 0.02;
+    camera.lookAt(0, 0, 0);
+    renderer.render(scene, camera);
+  }
+  animate3D();
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  // App state
   let userId = localStorage.getItem('wishlist_user_id');
   if (!userId) { userId = 'user_' + Date.now(); localStorage.setItem('wishlist_user_id', userId); }
   let selectedProduct = null;
@@ -156,18 +181,22 @@
   }
   function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
 
-  // Render product cards
+  // Render product grid (using inline onclick)
   function renderProductCard(product, isBestSeller = false) {
     return `
-      <div class="product-card" data-product='${JSON.stringify(product)}'>
+      <div class="product-card">
         ${isBestSeller ? '<div class="bg-yellow-500 text-black text-xs px-2 py-1 rounded-full absolute top-2 right-2">Best Seller</div>' : ''}
         ${product.image ? `<img src="${escapeHtml(product.image)}" class="card-image">` : `<div class="w-full h-56 bg-gray-800 rounded-2xl flex items-center justify-center text-5xl mb-4"><i class="fas ${product.icon || 'fa-microchip'}"></i></div>`}
         <h3 class="text-xl font-bold">${escapeHtml(product.name)}</h3>
         <p class="text-white/60">${escapeHtml(product.price)}</p>
-        <button class="view-detail-btn mt-3 bg-blue-600 px-4 py-1 rounded-full text-sm">View Details</button>
+        <button class="view-detail-btn mt-3 bg-blue-600 px-4 py-1 rounded-full text-sm" onclick="window.dispatchEvent(new CustomEvent('viewDetail', { detail: ${JSON.stringify(product).replace(/"/g, '&quot;')} }))">View Details</button>
       </div>
     `;
   }
+
+  window.addEventListener('viewDetail', (e) => {
+    showProductDetail(e.detail);
+  });
 
   async function loadProducts() {
     const snapshot = await getDocs(collection(db, 'products'));
@@ -178,32 +207,19 @@
     document.getElementById('best-selling-grid').innerHTML = best.map(p => renderProductCard(p, true)).join('');
     document.getElementById('other-collection-grid').innerHTML = other.map(p => renderProductCard(p)).join('');
     document.getElementById('all-products-grid').innerHTML = products.map(p => renderProductCard(p)).join('');
-    // Attach event listeners to all "View Details" buttons
-    document.querySelectorAll('.view-detail-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const card = btn.closest('.product-card');
-        const product = JSON.parse(card.getAttribute('data-product'));
-        showProductDetail(product);
-      });
-    });
   }
 
-  // Show product detail
   function showProductDetail(product) {
-    // update text
     document.getElementById('detail-title').innerText = product.name;
     document.getElementById('detail-price').innerText = product.price;
-    document.getElementById('detail-desc').innerText = product.desc || 'No description available.';
+    document.getElementById('detail-desc').innerText = product.desc || 'No description.';
     let specsHtml = '';
     if (product.specs) {
       specsHtml = `<ul class="list-disc pl-5">${product.specs.split('\n').map(line => `<li>${escapeHtml(line)}</li>`).join('')}</ul>`;
     } else {
-      specsHtml = '<p>No specifications provided.</p>';
+      specsHtml = '<p>No specifications.</p>';
     }
     document.getElementById('detail-specs').innerHTML = specsHtml;
-
-    // media container
     const mediaDiv = document.getElementById('detail-media');
     mediaDiv.innerHTML = '';
     const allImages = [product.image, ...(product.images || [])].filter(Boolean);
@@ -239,17 +255,12 @@
       }
       mediaDiv.innerHTML += videoHtml;
     }
-
-    // set order & wishlist
     document.getElementById('detail-order-btn').onclick = () => openCheckout(product);
     document.getElementById('detail-wishlist-btn').onclick = () => addToWishlist(product);
-
-    // switch page
     showPage('product-detail');
     window.scrollTo({ top: 0 });
   }
 
-  // Wishlist
   async function addToWishlist(product) {
     const q = query(collection(db, 'wishlists'), where('userId', '==', userId), where('productId', '==', product.id || product.name));
     const existing = await getDocs(q);
@@ -267,22 +278,11 @@
     const emptyMsg = document.getElementById('empty-wishlist');
     if (!items.length) { container.innerHTML = ''; emptyMsg.classList.remove('hidden'); return; }
     emptyMsg.classList.add('hidden');
-    container.innerHTML = items.map(item => `
-      <div class="bg-white/10 p-3 rounded mb-2 flex justify-between items-center">
-        <div><strong>${escapeHtml(item.product.name)}</strong><br>${escapeHtml(item.product.price)}</div>
-        <div>
-          <button class="order-from-wishlist bg-blue-600 px-3 py-1 rounded" data-prod='${JSON.stringify(item.product)}'>Order</button>
-          <button class="remove-wishlist bg-red-600 px-3 py-1 rounded ml-2" data-id="${item.id}">Remove</button>
-        </div>
-      </div>
-    `).join('');
+    container.innerHTML = items.map(item => `<div class="bg-white/10 p-3 rounded mb-2 flex justify-between"><div><strong>${escapeHtml(item.product.name)}</strong><br>${escapeHtml(item.product.price)}</div><div><button class="order-from-wishlist bg-blue-600 px-3 py-1 rounded" data-prod='${JSON.stringify(item.product)}'>Order</button><button class="remove-wishlist bg-red-600 px-3 py-1 rounded ml-2" data-id="${item.id}">Remove</button></div></div>`).join('');
     document.querySelectorAll('.order-from-wishlist').forEach(btn => btn.onclick = () => openCheckout(JSON.parse(btn.getAttribute('data-prod'))));
-    document.querySelectorAll('.remove-wishlist').forEach(async btn => {
-      btn.onclick = async () => { await deleteDoc(doc(db, 'wishlists', btn.getAttribute('data-id'))); loadWishlistPage(); };
-    });
+    document.querySelectorAll('.remove-wishlist').forEach(async btn => { btn.onclick = async () => { await deleteDoc(doc(db, 'wishlists', btn.getAttribute('data-id'))); loadWishlistPage(); }; });
   }
 
-  // Checkout
   async function openCheckout(product) {
     selectedProduct = product;
     document.getElementById('checkout-product-info').innerHTML = `<strong>${product.name}</strong> - ${product.price}`;
@@ -295,7 +295,7 @@
     const phone = document.getElementById('checkout-phone').value;
     const address = document.getElementById('checkout-address').value;
     const payment = document.getElementById('checkout-payment').value;
-    if (!name || !email || !phone || !address) { showToast("Please fill all fields"); return; }
+    if (!name || !email || !phone || !address) { showToast("Fill all fields"); return; }
     try {
       await addDoc(collection(db, 'orders'), {
         product: selectedProduct,
@@ -304,7 +304,7 @@
         createdAt: serverTimestamp(),
         orderId: Date.now().toString()
       });
-      document.getElementById('order-feedback').textContent = "Order placed! We'll contact you.";
+      document.getElementById('order-feedback').textContent = "Order placed!";
       document.getElementById('order-feedback').classList.remove('hidden');
       setTimeout(() => {
         document.getElementById('checkout-modal').style.display = 'none';
@@ -314,11 +314,9 @@
       }, 1500);
     } catch(err) { showToast("Error: "+err.message); }
   });
-
-  // Orders lookup
   document.getElementById('lookup-orders').addEventListener('click', async () => {
     const email = document.getElementById('order-email').value.trim();
-    if (!email) { showToast("Enter email address"); return; }
+    if (!email) { showToast("Enter email"); return; }
     const q = query(collection(db, 'orders'), where('customer.email', '==', email));
     const snap = await getDocs(q);
     const orders = [];
@@ -327,7 +325,7 @@
     const no = document.getElementById('no-orders');
     if (!orders.length) { container.innerHTML = ''; no.classList.remove('hidden'); return; }
     no.classList.add('hidden');
-    container.innerHTML = orders.map(o => `<div class="bg-white/10 p-3 rounded mb-2"><strong>${o.product.name}</strong> - ${o.product.price}<br>Status: ${o.status || 'pending'}</div>`).join('');
+    container.innerHTML = orders.map(o => `<div class="bg-white/10 p-3 rounded mb-2"><strong>${o.product.name}</strong> - ${o.product.price}<br>Status: ${o.status}</div>`).join('');
   });
 
   // Page routing
@@ -353,7 +351,6 @@
   });
   document.getElementById('back-to-products').addEventListener('click', () => showPage('products'));
 
-  // Initial load
   window.addEventListener('load', () => {
     const hash = location.hash.slice(1);
     if (pages[hash]) showPage(hash);
