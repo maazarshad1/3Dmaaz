@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maaz Admin - Product Manager</title>
+    <title>Maaz Admin - Simple Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -22,12 +22,12 @@
 </head>
 <body class="p-6">
     <div class="max-w-6xl mx-auto">
-        <!-- Login Screen -->
+        <!-- Login Screen (simple hardcoded) -->
         <div id="login-screen" class="flex justify-center items-center min-h-screen">
             <div class="card w-full max-w-md">
-                <h2 class="text-2xl font-bold mb-6">Admin Login</h2>
-                <input type="email" id="login-email" placeholder="Email" class="mb-3">
-                <input type="password" id="login-password" placeholder="Password" class="mb-4">
+                <h2 class="text-2xl font-bold mb-6">Admin Login (Demo)</h2>
+                <input type="text" id="login-username" placeholder="Username (admin)" class="mb-3">
+                <input type="password" id="login-password" placeholder="Password (maaz123)" class="mb-4">
                 <button id="login-btn" class="bg-blue-600 hover:bg-blue-700 text-white w-full py-2 rounded-xl">Login</button>
                 <p id="login-error" class="text-red-400 text-sm mt-3 hidden"></p>
             </div>
@@ -69,7 +69,6 @@
         {
             "imports": {
                 "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
-                "firebase/auth": "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js",
                 "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js",
                 "firebase/storage": "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js"
             }
@@ -77,11 +76,10 @@
     </script>
     <script type="module">
         import { initializeApp } from "firebase/app";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, getDoc as getFirestoreDoc } from "firebase/firestore";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-        // Your Firebase configuration (provided)
+        // Your Firebase configuration (already correct)
         const firebaseConfig = {
             apiKey: "AIzaSyCyG5fwhCstTKBVjwz5j3D6UHvDHyho8J0",
             authDomain: "dmaaz-da461.firebaseapp.com",
@@ -94,7 +92,6 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getFirestore(app);
         const storage = getStorage(app);
 
@@ -119,31 +116,29 @@
 
         let editingProductId = null;
 
-        // Authentication state
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
+        // HARDCODED LOGIN (no Firebase Auth)
+        const VALID_USERNAME = "admin";
+        const VALID_PASSWORD = "maaz123";
+
+        loginBtn.onclick = () => {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            if (username === VALID_USERNAME && password === VALID_PASSWORD) {
                 loginScreen.style.display = 'none';
                 dashboard.style.display = 'block';
                 loadProducts();
-            } else {
-                loginScreen.style.display = 'flex';
-                dashboard.style.display = 'none';
-            }
-        });
-
-        loginBtn.onclick = async () => {
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
                 loginError.classList.add('hidden');
-            } catch (err) {
-                loginError.textContent = err.message;
+            } else {
+                loginError.textContent = "Invalid username or password. Try admin / maaz123";
                 loginError.classList.remove('hidden');
             }
         };
 
-        logoutBtn.onclick = () => signOut(auth);
+        logoutBtn.onclick = () => {
+            loginScreen.style.display = 'flex';
+            dashboard.style.display = 'none';
+            resetForm();
+        };
 
         // Upload image to Firebase Storage and return URL
         async function uploadImage(file) {
@@ -174,7 +169,7 @@
             // Handle image upload
             if (imageUpload.files.length > 0) {
                 image = await uploadImage(imageUpload.files[0]);
-                productImageUrl.value = image; // update the URL field
+                productImageUrl.value = image;
             }
 
             const productData = { name, price, desc, specs, icon, image: image || '' };
@@ -189,7 +184,7 @@
                 }
                 formMessage.classList.add('text-green-400');
                 resetForm();
-                loadProducts(); // refresh list
+                loadProducts();
             } catch (err) {
                 formMessage.textContent = 'Error: ' + err.message;
                 formMessage.classList.add('text-red-400');
@@ -231,7 +226,6 @@
                 productsListDiv.appendChild(div);
             });
 
-            // attach edit/delete events
             document.querySelectorAll('.edit-btn').forEach(btn => {
                 btn.onclick = async () => {
                     const id = btn.getAttribute('data-id');
