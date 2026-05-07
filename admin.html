@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maaz Admin - Product Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body { background: #0a0a0a; color: white; font-family: 'Inter', sans-serif; }
+        .card { background: rgba(30,30,30,0.9); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 1.5rem; }
+        input, textarea, select { background: #1f1f1f; border: 1px solid #333; color: white; border-radius: 12px; padding: 0.75rem; width: 100%; margin-top: 0.25rem; }
+        input:focus, textarea:focus { outline: none; border-color: #3a86ff; }
+        button { transition: all 0.2s; cursor: pointer; }
+        .product-list-item { background: #1a1a1a; border-radius: 16px; padding: 1rem; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .product-list-item:hover { background: #252525; }
+        .delete-btn { background: #dc2626; }
+        .delete-btn:hover { background: #b91c1c; }
+        .edit-btn { background: #3b82f6; }
+        .edit-btn:hover { background: #2563eb; }
+    </style>
+</head>
+<body class="p-6">
+    <div class="max-w-6xl mx-auto">
+        <!-- Login Screen -->
+        <div id="login-screen" class="flex justify-center items-center min-h-screen">
+            <div class="card w-full max-w-md">
+                <h2 class="text-2xl font-bold mb-6">Admin Login</h2>
+                <input type="email" id="login-email" placeholder="Email" class="mb-3">
+                <input type="password" id="login-password" placeholder="Password" class="mb-4">
+                <button id="login-btn" class="bg-blue-600 hover:bg-blue-700 text-white w-full py-2 rounded-xl">Login</button>
+                <p id="login-error" class="text-red-400 text-sm mt-3 hidden"></p>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard (hidden until login) -->
+        <div id="dashboard" style="display: none;">
+            <div class="flex justify-between items-center mb-8 flex-wrap gap-4">
+                <h1 class="text-3xl font-bold">Product Manager</h1>
+                <button id="logout-btn" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-xl text-sm">Logout</button>
+            </div>
+
+            <!-- Add/Edit Product Form -->
+            <div class="card mb-10">
+                <h2 class="text-xl font-semibold mb-4" id="form-title">Add New Product</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="text" id="product-name" placeholder="Product name *">
+                    <input type="text" id="product-price" placeholder="Price (e.g., $489) *">
+                    <input type="text" id="product-image" placeholder="Image URL (or upload below)">
+                    <input type="file" id="image-upload" accept="image/*">
+                    <textarea id="product-desc" rows="3" placeholder="Short description"></textarea>
+                    <textarea id="product-specs" rows="3" placeholder="Specifications (e.g., 16GB RAM, OLED)"></textarea>
+                    <input type="text" id="product-icon" placeholder="Icon class (e.g., fa-microchip)" value="fa-microchip">
+                </div>
+                <div class="flex gap-3 mt-6">
+                    <button id="save-product-btn" class="bg-green-600 hover:bg-green-700 px-6 py-2 rounded-xl">Save Product</button>
+                    <button id="cancel-edit" class="bg-gray-600 hover:bg-gray-700 px-6 py-2 rounded-xl hidden">Cancel</button>
+                </div>
+                <p id="form-message" class="text-sm mt-3"></p>
+            </div>
+
+            <!-- Products List -->
+            <h2 class="text-xl font-semibold mb-4">All Products</h2>
+            <div id="products-list" class="space-y-2"></div>
+        </div>
+    </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
+                "firebase/auth": "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js",
+                "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js",
+                "firebase/storage": "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js"
+            }
+        }
+    </script>
+    <script type="module">
+        import { initializeApp } from "firebase/app";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, getDoc as getFirestoreDoc } from "firebase/firestore";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
+        // Your Firebase configuration (provided)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCyG5fwhCstTKBVjwz5j3D6UHvDHyho8J0",
+            authDomain: "dmaaz-da461.firebaseapp.com",
+            databaseURL: "https://dmaaz-da461-default-rtdb.firebaseio.com",
+            projectId: "dmaaz-da461",
+            storageBucket: "dmaaz-da461.firebasestorage.app",
+            messagingSenderId: "86883298773",
+            appId: "1:86883298773:web:13743b90f7f7023955615c",
+            measurementId: "G-7GGQYKJSPE"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // DOM elements
+        const loginScreen = document.getElementById('login-screen');
+        const dashboard = document.getElementById('dashboard');
+        const loginBtn = document.getElementById('login-btn');
+        const loginError = document.getElementById('login-error');
+        const logoutBtn = document.getElementById('logout-btn');
+        const saveBtn = document.getElementById('save-product-btn');
+        const cancelEditBtn = document.getElementById('cancel-edit');
+        const productName = document.getElementById('product-name');
+        const productPrice = document.getElementById('product-price');
+        const productDesc = document.getElementById('product-desc');
+        const productSpecs = document.getElementById('product-specs');
+        const productImageUrl = document.getElementById('product-image');
+        const imageUpload = document.getElementById('image-upload');
+        const productIcon = document.getElementById('product-icon');
+        const formMessage = document.getElementById('form-message');
+        const productsListDiv = document.getElementById('products-list');
+        const formTitle = document.getElementById('form-title');
+
+        let editingProductId = null;
+
+        // Authentication state
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loginScreen.style.display = 'none';
+                dashboard.style.display = 'block';
+                loadProducts();
+            } else {
+                loginScreen.style.display = 'flex';
+                dashboard.style.display = 'none';
+            }
+        });
+
+        loginBtn.onclick = async () => {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                loginError.classList.add('hidden');
+            } catch (err) {
+                loginError.textContent = err.message;
+                loginError.classList.remove('hidden');
+            }
+        };
+
+        logoutBtn.onclick = () => signOut(auth);
+
+        // Upload image to Firebase Storage and return URL
+        async function uploadImage(file) {
+            if (!file) return null;
+            const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
+            await uploadBytes(storageRef, file);
+            return await getDownloadURL(storageRef);
+        }
+
+        // Save or update product
+        saveBtn.onclick = async () => {
+            const name = productName.value.trim();
+            const price = productPrice.value.trim();
+            const desc = productDesc.value.trim();
+            const specs = productSpecs.value.trim();
+            const icon = productIcon.value.trim() || 'fa-microchip';
+            let image = productImageUrl.value.trim();
+
+            if (!name || !price) {
+                formMessage.textContent = 'Name and price are required';
+                formMessage.classList.add('text-red-400');
+                return;
+            }
+
+            formMessage.textContent = 'Saving...';
+            formMessage.classList.remove('text-red-400', 'text-green-400');
+
+            // Handle image upload
+            if (imageUpload.files.length > 0) {
+                image = await uploadImage(imageUpload.files[0]);
+                productImageUrl.value = image; // update the URL field
+            }
+
+            const productData = { name, price, desc, specs, icon, image: image || '' };
+
+            try {
+                if (editingProductId) {
+                    await updateDoc(doc(db, 'products', editingProductId), productData);
+                    formMessage.textContent = 'Product updated!';
+                } else {
+                    await addDoc(collection(db, 'products'), productData);
+                    formMessage.textContent = 'Product added!';
+                }
+                formMessage.classList.add('text-green-400');
+                resetForm();
+                loadProducts(); // refresh list
+            } catch (err) {
+                formMessage.textContent = 'Error: ' + err.message;
+                formMessage.classList.add('text-red-400');
+            }
+        };
+
+        function resetForm() {
+            productName.value = '';
+            productPrice.value = '';
+            productDesc.value = '';
+            productSpecs.value = '';
+            productImageUrl.value = '';
+            productIcon.value = 'fa-microchip';
+            imageUpload.value = '';
+            editingProductId = null;
+            formTitle.textContent = 'Add New Product';
+            cancelEditBtn.classList.add('hidden');
+        }
+
+        cancelEditBtn.onclick = resetForm;
+
+        async function loadProducts() {
+            const querySnapshot = await getDocs(collection(db, 'products'));
+            productsListDiv.innerHTML = '';
+            querySnapshot.forEach((docSnap) => {
+                const prod = docSnap.data();
+                const div = document.createElement('div');
+                div.className = 'product-list-item';
+                div.innerHTML = `
+                    <div class="flex-1">
+                        <strong>${escapeHtml(prod.name)}</strong> - ${escapeHtml(prod.price)}
+                        <div class="text-sm text-gray-400">${escapeHtml(prod.desc?.substring(0, 60))}</div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="edit-btn text-white px-3 py-1 rounded-lg text-sm" data-id="${docSnap.id}">Edit</button>
+                        <button class="delete-btn text-white px-3 py-1 rounded-lg text-sm" data-id="${docSnap.id}">Delete</button>
+                    </div>
+                `;
+                productsListDiv.appendChild(div);
+            });
+
+            // attach edit/delete events
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.onclick = async () => {
+                    const id = btn.getAttribute('data-id');
+                    const docRef = doc(db, 'products', id);
+                    const docSnap = await getFirestoreDoc(docRef);
+                    if (docSnap.exists()) {
+                        const prod = docSnap.data();
+                        productName.value = prod.name;
+                        productPrice.value = prod.price;
+                        productDesc.value = prod.desc || '';
+                        productSpecs.value = prod.specs || '';
+                        productImageUrl.value = prod.image || '';
+                        productIcon.value = prod.icon || 'fa-microchip';
+                        editingProductId = id;
+                        formTitle.textContent = 'Edit Product';
+                        cancelEditBtn.classList.remove('hidden');
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                };
+            });
+
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.onclick = async () => {
+                    if (confirm('Delete this product?')) {
+                        await deleteDoc(doc(db, 'products', btn.getAttribute('data-id')));
+                        loadProducts();
+                    }
+                };
+            });
+        }
+
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, function(m) { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
+    </script>
+</body>
+</html>
