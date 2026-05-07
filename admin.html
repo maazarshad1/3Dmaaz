@@ -22,10 +22,10 @@
 </head>
 <body class="p-6">
     <div class="max-w-6xl mx-auto">
-        <!-- Login Screen (simple hardcoded) -->
+        <!-- Login Screen (hardcoded) -->
         <div id="login-screen" class="flex justify-center items-center min-h-screen">
             <div class="card w-full max-w-md">
-                <h2 class="text-2xl font-bold mb-6">Admin Login (Demo)</h2>
+                <h2 class="text-2xl font-bold mb-6">Admin Login</h2>
                 <input type="text" id="login-username" placeholder="Username (admin)" class="mb-3">
                 <input type="password" id="login-password" placeholder="Password (maaz123)" class="mb-4">
                 <button id="login-btn" class="bg-blue-600 hover:bg-blue-700 text-white w-full py-2 rounded-xl">Login</button>
@@ -40,7 +40,6 @@
                 <button id="logout-btn" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-xl text-sm">Logout</button>
             </div>
 
-            <!-- Add/Edit Product Form -->
             <div class="card mb-10">
                 <h2 class="text-xl font-semibold mb-4" id="form-title">Add New Product</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -49,7 +48,7 @@
                     <input type="text" id="product-image" placeholder="Image URL (or upload below)">
                     <input type="file" id="image-upload" accept="image/*">
                     <textarea id="product-desc" rows="3" placeholder="Short description"></textarea>
-                    <textarea id="product-specs" rows="3" placeholder="Specifications (e.g., 16GB RAM, OLED)"></textarea>
+                    <textarea id="product-specs" rows="3" placeholder="Specifications"></textarea>
                     <input type="text" id="product-icon" placeholder="Icon class (e.g., fa-microchip)" value="fa-microchip">
                 </div>
                 <div class="flex gap-3 mt-6">
@@ -59,7 +58,6 @@
                 <p id="form-message" class="text-sm mt-3"></p>
             </div>
 
-            <!-- Products List -->
             <h2 class="text-xl font-semibold mb-4">All Products</h2>
             <div id="products-list" class="space-y-2"></div>
         </div>
@@ -79,7 +77,6 @@
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, getDoc as getFirestoreDoc } from "firebase/firestore";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-        // Your Firebase configuration (already correct)
         const firebaseConfig = {
             apiKey: "AIzaSyCyG5fwhCstTKBVjwz5j3D6UHvDHyho8J0",
             authDomain: "dmaaz-da461.firebaseapp.com",
@@ -95,7 +92,6 @@
         const db = getFirestore(app);
         const storage = getStorage(app);
 
-        // DOM elements
         const loginScreen = document.getElementById('login-screen');
         const dashboard = document.getElementById('dashboard');
         const loginBtn = document.getElementById('login-btn');
@@ -116,7 +112,7 @@
 
         let editingProductId = null;
 
-        // HARDCODED LOGIN (no Firebase Auth)
+        // Hardcoded credentials
         const VALID_USERNAME = "admin";
         const VALID_PASSWORD = "maaz123";
 
@@ -129,7 +125,7 @@
                 loadProducts();
                 loginError.classList.add('hidden');
             } else {
-                loginError.textContent = "Invalid username or password. Try admin / maaz123";
+                loginError.textContent = "Invalid username or password. Use admin / maaz123";
                 loginError.classList.remove('hidden');
             }
         };
@@ -140,7 +136,6 @@
             resetForm();
         };
 
-        // Upload image to Firebase Storage and return URL
         async function uploadImage(file) {
             if (!file) return null;
             const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
@@ -148,7 +143,6 @@
             return await getDownloadURL(storageRef);
         }
 
-        // Save or update product
         saveBtn.onclick = async () => {
             const name = productName.value.trim();
             const price = productPrice.value.trim();
@@ -166,7 +160,6 @@
             formMessage.textContent = 'Saving...';
             formMessage.classList.remove('text-red-400', 'text-green-400');
 
-            // Handle image upload
             if (imageUpload.files.length > 0) {
                 image = await uploadImage(imageUpload.files[0]);
                 productImageUrl.value = image;
