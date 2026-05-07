@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Maaz — Dynamic Website</title>
+  <title>Maaz — Advanced Product Showcase</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <style>
@@ -30,18 +31,21 @@
     .nav-link:hover::after, .nav-link.active::after { width: 100%; }
     .mobile-menu { display: none; flex-direction: column; background: rgba(0,0,0,0.95); backdrop-filter: blur(12px); position: absolute; top: 70px; left: 0; width: 100%; padding: 1.5rem; gap: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.1); z-index: 50; }
     .modal, .checkout-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 10001; justify-content: center; align-items: center; }
-    .modal-content, .checkout-content { background: #111; color: white; max-width: 560px; width: 90%; border-radius: 32px; padding: 2rem; border: 1px solid rgba(255,255,255,0.2); animation: modalPop 0.3s ease; max-height: 80vh; overflow-y: auto; }
+    .modal-content, .checkout-content { background: #111; color: white; max-width: 800px; width: 90%; border-radius: 32px; padding: 2rem; border: 1px solid rgba(255,255,255,0.2); animation: modalPop 0.3s ease; max-height: 85vh; overflow-y: auto; }
     @keyframes modalPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     .close-modal, .close-checkout { position: absolute; top: 20px; right: 24px; font-size: 28px; cursor: pointer; color: white; transition: transform 0.2s; }
-    input, textarea, select { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 1rem; padding: 0.75rem 1rem; width: 100%; transition: all 0.2s; margin-bottom: 1rem; }
+    .close-modal:hover, .close-checkout:hover { transform: scale(1.1); }
+    input, textarea, select { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 1rem; padding: 0.75rem 1rem; width: 100%; margin-bottom: 1rem; }
     button { transition: all 0.2s; cursor: pointer; }
     .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
     .order-btn { background: linear-gradient(135deg, #3a86ff, #8338ec); border: none; color: white; padding: 0.5rem 1rem; border-radius: 40px; font-size: 0.8rem; font-weight: 500; }
     .order-btn:hover { transform: scale(1.05); }
     .wishlist-btn { background: none; border: 1px solid rgba(255,255,255,0.3); border-radius: 40px; padding: 0.5rem 1rem; font-size: 0.8rem; }
-    .wishlist-btn:hover { background: rgba(255,255,255,0.1); }
     .toast { position: fixed; bottom: 30px; right: 30px; background: #1a1a1a; backdrop-filter: blur(8px); border-left: 4px solid #3a86ff; padding: 12px 20px; border-radius: 12px; color: white; z-index: 10002; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
-    .order-card { background: rgba(255,255,255,0.05); border-radius: 1rem; padding: 1rem; margin-bottom: 1rem; border-left: 4px solid #3a86ff; }
+    .swiper { width: 100%; height: 300px; border-radius: 1rem; margin-bottom: 1rem; }
+    .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
+    .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; margin-bottom: 1rem; border-radius: 1rem; }
+    .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
   </style>
 </head>
 <body>
@@ -76,177 +80,57 @@
     </div>
   </nav>
 
-  <!-- HOME PAGE (dynamic text) -->
+  <!-- HOME PAGE (unchanged) -->
   <div id="home-page" class="page active">
-    <section class="px-6 md:px-20 pt-28 pb-12">
-      <div class="max-w-7xl mx-auto">
-        <div class="text-center mb-12">
-          <span class="text-xs font-mono uppercase tracking-wider bg-white/10 px-4 py-1.5 rounded-full text-white/80 inline-block" id="bestsellers-badge">⭐ best in class</span>
-          <h2 class="text-3xl md:text-5xl font-bold tracking-tight mt-4 text-white" id="bestsellers-title">Best Sellers</h2>
-          <p class="text-white/50 max-w-2xl mx-auto mt-3" id="bestsellers-subtitle">Most loved by our community</p>
-        </div>
-        <div id="best-selling-grid" class="product-grid"></div>
-      </div>
-    </section>
-
-    <section class="min-h-[70vh] flex flex-col justify-center items-start px-6 md:px-20 py-16">
-      <div class="max-w-6xl mx-auto w-full">
-        <div class="hero-content">
-          <span class="text-sm uppercase tracking-[0.2em] text-white/70 mb-2 block" id="hero-badge">✦  Defining tomorrow</span>
-          <h1 class="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter text-white leading-[1.1]" id="hero-title">MaaZ<br>visions.</h1>
-          <p class="text-xl md:text-2xl text-white/70 max-w-2xl mt-8 leading-relaxed" id="hero-tagline">Where minimalism meets in designed to reshape perception.</p>
-          <div class="mt-12 flex flex-wrap gap-8">
-            <a href="#products" data-page="products" class="page-link group flex items-center gap-2 border-b-2 border-white/50 pb-1 text-white font-medium text-lg transition-all hover:gap-3" id="hero-btn">Explore collection → <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i></a>
-            <a href="#contact" data-page="contact" class="page-link text-white/70 hover:text-white transition flex items-center gap-2 text-lg" id="contact-btn"><i class="far fa-circle"></i> Get in touch</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="px-6 md:px-20 py-20">
-      <div class="max-w-7xl mx-auto">
-        <div class="text-center mb-12">
-          <span class="text-xs font-mono uppercase tracking-wider bg-white/10 px-4 py-1.5 rounded-full text-white/80 inline-block" id="other-badge">curated selection</span>
-          <h2 class="text-3xl md:text-5xl font-bold tracking-tight mt-4 text-white" id="other-title">Other Collection</h2>
-          <p class="text-white/50 max-w-2xl mx-auto mt-3" id="other-subtitle">Discover more signature artefacts</p>
-        </div>
-        <div id="other-collection-grid" class="product-grid"></div>
-      </div>
-    </section>
+    <section class="px-6 md:px-20 pt-28 pb-12"><div class="max-w-7xl mx-auto"><div class="text-center mb-12"><span class="text-xs font-mono uppercase tracking-wider bg-white/10 px-4 py-1.5 rounded-full text-white/80 inline-block">⭐ best in class</span><h2 class="text-3xl md:text-5xl font-bold tracking-tight mt-4 text-white">Best Sellers</h2><p class="text-white/50 max-w-2xl mx-auto mt-3">Most loved by our community</p></div><div id="best-selling-grid" class="product-grid"></div></div></section>
+    <section class="min-h-[70vh] flex flex-col justify-center items-start px-6 md:px-20 py-16"><div class="max-w-6xl mx-auto w-full"><div class="hero-content"><span class="text-sm uppercase tracking-[0.2em] text-white/70 mb-2 block">✦  Defining tomorrow</span><h1 class="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter text-white leading-[1.1]">MaaZ<br>visions.</h1><p class="text-xl md:text-2xl text-white/70 max-w-2xl mt-8 leading-relaxed">Where minimalism meets in designed to reshape perception.</p><div class="mt-12 flex flex-wrap gap-8"><a href="#products" data-page="products" class="page-link group flex items-center gap-2 border-b-2 border-white/50 pb-1 text-white font-medium text-lg transition-all hover:gap-3">Explore collection → <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i></a><a href="#contact" data-page="contact" class="page-link text-white/70 hover:text-white transition flex items-center gap-2 text-lg"><i class="far fa-circle"></i> Get in touch</a></div></div></div></section>
+    <section class="px-6 md:px-20 py-20"><div class="max-w-7xl mx-auto"><div class="text-center mb-12"><span class="text-xs font-mono uppercase tracking-wider bg-white/10 px-4 py-1.5 rounded-full text-white/80 inline-block">curated selection</span><h2 class="text-3xl md:text-5xl font-bold tracking-tight mt-4 text-white">Other Collection</h2><p class="text-white/50 max-w-2xl mx-auto mt-3">Discover more signature artefacts</p></div><div id="other-collection-grid" class="product-grid"></div></div></section>
   </div>
 
   <!-- PRODUCTS PAGE -->
-  <div id="products-page" class="page">
-    <section class="px-6 md:px-20 py-24 md:py-32 min-h-screen">
-      <div class="max-w-7xl mx-auto">
-        <div class="text-center md:text-left mb-16">
-          <span class="text-xs font-mono uppercase tracking-wider bg-white/10 px-4 py-1.5 rounded-full text-white/80 inline-block">SIGNATURE SERIES</span>
-          <h2 class="text-4xl md:text-6xl font-bold tracking-tight mt-6 text-white">Artefacts of the new era.</h2>
-          <p class="text-white/60 max-w-2xl mt-4 text-lg">Precision crafted objects that blend digital and physical realities.</p>
-        </div>
-        <div id="all-products-grid" class="product-grid"></div>
-      </div>
-    </section>
-  </div>
+  <div id="products-page" class="page"><section class="px-6 md:px-20 py-24 md:py-32 min-h-screen"><div class="max-w-7xl mx-auto"><div class="text-center md:text-left mb-16"><span class="text-xs font-mono uppercase tracking-wider bg-white/10 px-4 py-1.5 rounded-full text-white/80 inline-block">SIGNATURE SERIES</span><h2 class="text-4xl md:text-6xl font-bold tracking-tight mt-6 text-white">Artefacts of the new era.</h2><p class="text-white/60 max-w-2xl mt-4 text-lg">Precision crafted objects that blend digital and physical realities.</p></div><div id="all-products-grid" class="product-grid"></div></div></section></div>
 
-  <!-- PHILOSOPHY PAGE (dynamic) -->
-  <div id="philosophy-page" class="page">
-    <section class="px-6 md:px-20 py-24 md:py-32 min-h-screen">
-      <div class="max-w-7xl mx-auto">
-        <div class="grid md:grid-cols-2 gap-16 items-center mb-20">
-          <div>
-            <span class="text-xs font-mono bg-white/10 px-4 py-1.5 rounded-full">core belief</span>
-            <h2 class="text-4xl md:text-5xl font-bold tracking-tight mt-6 text-white" id="philosophy-title">Design as a dialogue.</h2>
-            <p class="text-white/70 text-lg mt-6 leading-relaxed" id="philosophy-desc">Every Maaz product merges tactile elegance with invisible technology. We don't just build objects — we cultivate relationships between human and machine.</p>
-            <div class="mt-10 flex gap-4">
-              <div class="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-5 py-2 rounded-full"><i class="fas fa-leaf text-white/80"></i><span class="text-sm font-medium text-white">Carbon neutral</span></div>
-              <div class="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-5 py-2 rounded-full"><i class="fas fa-infinity text-white/80"></i><span class="text-sm font-medium text-white">Open ecosystem</span></div>
-            </div>
-          </div>
-          <div class="flex justify-center">
-            <div class="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20 text-center shadow-xl transition-all hover:scale-105 duration-500">
-              <i class="fas fa-quote-right text-4xl text-white/40 mb-4"></i>
-              <p class="italic text-white/80 text-xl">"Maaz exists at the intersection of curiosity and craft."</p>
-              <p class="text-xs uppercase mt-6 tracking-wider text-white/50">— design manifesto</p>
-            </div>
-          </div>
-        </div>
-        <div class="grid md:grid-cols-3 gap-6 mt-12" id="pillars-container">
-          <div class="bg-white/5 backdrop-blur-sm p-6 rounded-2xl border border-white/10"><i class="fas fa-gem text-3xl text-white/60 mb-4"></i><h3 class="font-bold text-xl text-white" id="pillar1-title">Precision</h3><p class="text-white/60 mt-2" id="pillar1-desc">Crafted with obsessive attention to every micrometer.</p></div>
-          <div class="bg-white/5 backdrop-blur-sm p-6 rounded-2xl border border-white/10"><i class="fas fa-hand-peace text-3xl text-white/60 mb-4"></i><h3 class="font-bold text-xl text-white" id="pillar2-title">Simplicity</h3><p class="text-white/60 mt-2" id="pillar2-desc">Removing the unnecessary, elevating the essential.</p></div>
-          <div class="bg-white/5 backdrop-blur-sm p-6 rounded-2xl border border-white/10"><i class="fas fa-chart-line text-3xl text-white/60 mb-4"></i><h3 class="font-bold text-xl text-white" id="pillar3-title">Evolution</h3><p class="text-white/60 mt-2" id="pillar3-desc">Constant refinement through user feedback loops.</p></div>
-        </div>
-      </div>
-    </section>
-  </div>
+  <!-- PHILOSOPHY PAGE (static) -->
+  <div id="philosophy-page" class="page"><section class="px-6 md:px-20 py-24 md:py-32 min-h-screen"><div class="max-w-7xl mx-auto"><div class="grid md:grid-cols-2 gap-16 items-center mb-20"><div><span class="text-xs font-mono bg-white/10 px-4 py-1.5 rounded-full">core belief</span><h2 class="text-4xl md:text-5xl font-bold tracking-tight mt-6 text-white">Design as a dialogue.</h2><p class="text-white/70 text-lg mt-6 leading-relaxed">Every Maaz product merges tactile elegance with invisible technology. We don't just build objects — we cultivate relationships.</p><div class="mt-10 flex gap-4"><div class="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-5 py-2 rounded-full"><i class="fas fa-leaf text-white/80"></i><span class="text-sm font-medium text-white">Carbon neutral</span></div><div class="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-5 py-2 rounded-full"><i class="fas fa-infinity text-white/80"></i><span class="text-sm font-medium text-white">Open ecosystem</span></div></div></div><div class="flex justify-center"><div class="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20 text-center shadow-xl transition-all hover:scale-105 duration-500"><i class="fas fa-quote-right text-4xl text-white/40 mb-4"></i><p class="italic text-white/80 text-xl">"Maaz exists at the intersection of curiosity and craft."</p><p class="text-xs uppercase mt-6 tracking-wider text-white/50">— design manifesto</p></div></div></div><div class="grid md:grid-cols-3 gap-6 mt-12"><div class="bg-white/5 backdrop-blur-sm p-6 rounded-2xl border border-white/10"><i class="fas fa-gem text-3xl text-white/60 mb-4"></i><h3 class="font-bold text-xl text-white">Precision</h3><p class="text-white/60 mt-2">Crafted with obsession.</p></div><div class="bg-white/5 backdrop-blur-sm p-6 rounded-2xl border border-white/10"><i class="fas fa-hand-peace text-3xl text-white/60 mb-4"></i><h3 class="font-bold text-xl text-white">Simplicity</h3><p class="text-white/60 mt-2">Removing the unnecessary.</p></div><div class="bg-white/5 backdrop-blur-sm p-6 rounded-2xl border border-white/10"><i class="fas fa-chart-line text-3xl text-white/60 mb-4"></i><h3 class="font-bold text-xl text-white">Evolution</h3><p class="text-white/60 mt-2">Constant refinement.</p></div></div></div></section></div>
 
-  <!-- CONTACT PAGE (dynamic) -->
-  <div id="contact-page" class="page">
-    <section class="px-6 md:px-20 py-24 md:py-32 min-h-screen">
-      <div class="max-w-5xl mx-auto">
-        <div class="text-center mb-16">
-          <h2 class="text-4xl md:text-6xl font-bold tracking-tighter text-white" id="contact-heading">Shape the future<span class="text-white/40">.</span></h2>
-          <p class="text-white/60 text-xl mt-6 max-w-xl mx-auto">Interested in early access? Reach out to our studio.</p>
-        </div>
-        <div class="grid md:grid-cols-2 gap-12">
-          <div>
-            <h3 class="text-2xl font-semibold mb-6 text-white">Let’s talk.</h3>
-            <form id="contact-form">
-              <div class="mb-4"><input type="text" id="contact-name" placeholder="Your name" required></div>
-              <div class="mb-4"><input type="email" id="contact-email" placeholder="Email address" required></div>
-              <div class="mb-4"><textarea id="contact-message" rows="4" placeholder="Your message" required></textarea></div>
-              <button type="submit" class="bg-white text-black px-8 py-3 rounded-full hover:bg-white/90 transition w-full font-medium">Send message →</button>
-              <p id="form-feedback" class="text-sm mt-3 text-center text-green-400 hidden">✓ Message sent! We'll reply soon.</p>
-            </form>
-          </div>
-          <div>
-            <h3 class="text-2xl font-semibold mb-6 text-white">Studio details</h3>
-            <div class="space-y-6">
-              <div class="flex items-start gap-4"><i class="fas fa-map-marker-alt text-xl text-white/60 mt-1"></i><div><p class="font-medium text-white" id="contact-address-text">Maaz Studio, San Francisco, CA</p></div></div>
-              <div class="flex items-start gap-4"><i class="fas fa-envelope text-xl text-white/60 mt-1"></i><div><p class="font-medium text-white" id="contact-email-text">hello@maaz.studio</p><p class="text-white/60">Response within 24h</p></div></div>
-              <div class="flex items-start gap-4"><i class="fab fa-instagram text-xl text-white/60 mt-1"></i><div><p class="font-medium text-white" id="social-instagram-link">@maaz.studio</p><p class="text-white/60">Follow for updates</p></div></div>
-            </div>
-            <div class="mt-8">
-              <h3 class="text-xl font-semibold mb-4 text-white">Newsletter</h3>
-              <div class="flex"><input type="email" id="newsletter-email" placeholder="your@email.com" class="flex-1 rounded-l-2xl rounded-r-none"><button id="newsletter-btn" class="bg-white text-black px-6 rounded-r-2xl hover:bg-white/90">Subscribe</button></div>
-              <p id="newsletter-feedback" class="text-xs mt-2 text-green-400 hidden">Thanks for subscribing!</p>
-            </div>
-          </div>
-        </div>
-        <div class="mt-16 text-center">
-          <div class="flex justify-center gap-10 text-white/60 text-3xl">
-            <a href="#" target="_blank" id="social-instagram" class="fab fa-instagram hover:text-white transition-transform hover:scale-110"></a>
-            <a href="#" target="_blank" id="social-twitter" class="fab fa-x-twitter hover:text-white transition-transform hover:scale-110"></a>
-            <a href="#" target="_blank" id="social-linkedin" class="fab fa-linkedin-in hover:text-white transition-transform hover:scale-110"></a>
-          </div>
-        </div>
-      </div>
-    </section>
-  </div>
+  <!-- CONTACT PAGE (simplified) -->
+  <div id="contact-page" class="page"><section class="px-6 md:px-20 py-24 md:py-32 min-h-screen"><div class="max-w-4xl mx-auto text-center"><h2 class="text-4xl md:text-6xl font-bold tracking-tighter text-white">Shape the future<span class="text-white/40">.</span></h2><p class="text-white/60 text-xl mt-6">Interested in early access? Reach out to our studio.</p><form id="contact-form" class="mt-8"><input type="text" placeholder="Name" id="contact-name"><input type="email" placeholder="Email" id="contact-email"><textarea rows="4" placeholder="Message" id="contact-message"></textarea><button type="submit" class="bg-white text-black px-8 py-3 rounded-full w-full hover:bg-white/90">Send</button><p id="form-feedback" class="text-green-400 hidden mt-3">Sent!</p></form><div class="mt-12 flex justify-center gap-8 text-2xl"><a href="#" class="fab fa-instagram hover:text-white"></a><a href="#" class="fab fa-twitter hover:text-white"></a></div></div></section></div>
 
   <!-- WISHLIST PAGE -->
-  <div id="wishlist-page" class="page">
-    <section class="px-6 md:px-20 py-24 md:py-32 min-h-screen">
-      <div class="max-w-4xl mx-auto">
-        <h2 class="text-4xl md:text-5xl font-bold mb-8 text-center">❤️ My Wishlist</h2>
-        <div id="wishlist-items-container" class="space-y-4"></div>
-        <p id="empty-wishlist" class="text-center text-white/50 mt-8">Your wishlist is empty. Start adding products!</p>
-      </div>
-    </section>
-  </div>
+  <div id="wishlist-page" class="page"><section class="px-6 md:px-20 py-24 md:py-32 min-h-screen"><div class="max-w-4xl mx-auto"><h2 class="text-4xl md:text-5xl font-bold mb-8 text-center">❤️ My Wishlist</h2><div id="wishlist-items-container"></div><p id="empty-wishlist" class="text-center text-white/50">Your wishlist is empty.</p></div></section></div>
 
   <!-- ORDERS PAGE -->
-  <div id="orders-page" class="page">
-    <section class="px-6 md:px-20 py-24 md:py-32 min-h-screen">
-      <div class="max-w-4xl mx-auto">
-        <h2 class="text-4xl md:text-5xl font-bold mb-8 text-center">📦 My Orders</h2>
-        <div class="card bg-white/10 p-6 rounded-2xl mb-8">
-          <label class="block mb-2">Enter your email to see orders</label>
-          <div class="flex gap-2"><input type="email" id="order-email" placeholder="Email used at checkout" class="flex-1"><button id="lookup-orders" class="bg-blue-600 px-4 rounded-xl">Search</button></div>
-        </div>
-        <div id="orders-list" class="space-y-4"></div>
-        <p id="no-orders" class="text-center text-white/50 hidden">No orders found for this email.</p>
-      </div>
-    </section>
-  </div>
+  <div id="orders-page" class="page"><section class="px-6 md:px-20 py-24 md:py-32 min-h-screen"><div class="max-w-4xl mx-auto"><h2 class="text-4xl md:text-5xl font-bold mb-8 text-center">📦 My Orders</h2><input type="email" id="order-email" placeholder="Your email" class="mb-4"><button id="lookup-orders" class="bg-blue-600 px-6 py-2 rounded-full">Search</button><div id="orders-list" class="mt-6"></div><p id="no-orders" class="text-center text-white/50 hidden">No orders found.</p></div></section></div>
 
-  <footer class="border-t border-white/10 py-12 text-center text-white/40 text-sm">
-    <p id="footer-text">© 2026 Maaz — designed to reshape perception.</p>
-  </footer>
+  <footer class="border-t border-white/10 py-12 text-center text-white/40 text-sm"><p>© 2026 Maaz — designed to reshape perception.</p></footer>
 </div>
 
-<!-- Product Modal -->
-<div id="product-modal" class="modal"><div class="modal-content"><span class="close-modal">&times;</span><div class="text-6xl text-center mb-4" id="modal-icon"><i class="fas fa-microchip"></i></div><h3 id="modal-title" class="text-2xl font-bold text-center text-white">Neural Frame</h3><p id="modal-price" class="text-lg font-semibold text-center text-white/80 mt-2">$489</p><p id="modal-desc" class="mt-6 text-white/70 leading-relaxed">Description here</p><div class="mt-5 p-4 bg-white/10 rounded-xl"><p class="text-sm font-semibold text-white">Specifications</p><p id="modal-specs" class="text-sm text-white/60 mt-1"></p></div><div class="flex gap-3 mt-6"><button id="modal-order-btn" class="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-3 rounded-full text-sm font-medium hover:scale-105 transition">Order Now →</button><button id="modal-wishlist-btn" class="flex-1 border border-white/30 rounded-full py-3 text-sm text-white hover:bg-white/10 transition">Add to wishlist</button></div></div></div>
+<!-- Product Modal (advanced) -->
+<div id="product-modal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal">&times;</span>
+    <div id="modal-media-gallery" class="mb-4"></div>
+    <h3 id="modal-title" class="text-2xl font-bold text-center text-white"></h3>
+    <p id="modal-price" class="text-lg font-semibold text-center text-white/80 mt-2"></p>
+    <p id="modal-desc" class="mt-4 text-white/70 leading-relaxed"></p>
+    <div class="mt-4 p-3 bg-white/10 rounded-xl"><p class="font-semibold">Specifications</p><p id="modal-specs" class="text-sm text-white/60"></p></div>
+    <div class="flex gap-3 mt-6">
+      <button id="modal-order-btn" class="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-3 rounded-full font-medium">Order Now</button>
+      <button id="modal-wishlist-btn" class="flex-1 border border-white/30 rounded-full py-3 text-sm hover:bg-white/10">Add to wishlist</button>
+    </div>
+  </div>
+</div>
 
 <!-- Checkout Modal -->
-<div id="checkout-modal" class="checkout-modal"><div class="checkout-content"><span class="close-checkout">&times;</span><h2 class="text-2xl font-bold mb-4 text-center">Complete Your Order</h2><form id="checkout-form"><input type="text" id="checkout-name" placeholder="Full Name *" required><input type="email" id="checkout-email" placeholder="Email Address *" required><input type="tel" id="checkout-phone" placeholder="Phone Number *" required><textarea id="checkout-address" rows="3" placeholder="Delivery Address *" required></textarea><select id="checkout-payment" required><option value="">Select Payment Method</option><option value="Cash on Delivery">Cash on Delivery</option><option value="Credit Card">Credit Card</option><option value="PayPal">PayPal</option></select><div id="checkout-product-info" class="text-sm text-white/60 mb-4 p-2 bg-white/5 rounded-xl"></div><button type="submit" class="bg-green-600 hover:bg-green-700 w-full py-3 rounded-full font-semibold">Place Order</button></form><p id="order-feedback" class="text-sm mt-3 text-center text-green-400 hidden"></p></div></div>
+<div id="checkout-modal" class="checkout-modal"><div class="checkout-content"><span class="close-checkout">&times;</span><h2 class="text-2xl font-bold mb-4">Complete Your Order</h2><form id="checkout-form"><input type="text" id="checkout-name" placeholder="Full Name" required><input type="email" id="checkout-email" placeholder="Email" required><input type="tel" id="checkout-phone" placeholder="Phone" required><textarea id="checkout-address" rows="3" placeholder="Address" required></textarea><select id="checkout-payment"><option>Cash on Delivery</option><option>Credit Card</option></select><div id="checkout-product-info" class="text-sm bg-white/5 p-2 rounded mb-4"></div><button type="submit" class="bg-green-600 w-full py-3 rounded-full font-semibold">Place Order</button></form><p id="order-feedback" class="text-sm mt-3 text-center text-green-400 hidden"></p></div></div>
 
 <script type="importmap">
   {
     "imports": {
       "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
       "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
-      "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"
+      "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js",
+      "swiper": "https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.mjs"
     }
   }
 </script>
@@ -254,26 +138,20 @@
   import * as THREE from 'three';
   import { initializeApp } from "firebase/app";
   import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc, getDoc, query, where, orderBy, serverTimestamp } from "firebase/firestore";
+  import Swiper from 'swiper';
 
   const firebaseConfig = {
     apiKey: "AIzaSyCyG5fwhCstTKBVjwz5j3D6UHvDHyho8J0",
     authDomain: "dmaaz-da461.firebaseapp.com",
-    databaseURL: "https://dmaaz-da461-default-rtdb.firebaseio.com",
     projectId: "dmaaz-da461",
     storageBucket: "dmaaz-da461.firebasestorage.app",
     messagingSenderId: "86883298773",
-    appId: "1:86883298773:web:13743b90f7f7023955615c",
-    measurementId: "G-7GGQYKJSPE"
+    appId: "1:86883298773:web:13743b90f7f7023955615c"
   };
-
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-  let selectedProductForCheckout = null;
-  let currentWishlist = [];
-  let userId = localStorage.getItem('wishlist_user_id');
-  if (!userId) { userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8); localStorage.setItem('wishlist_user_id', userId); }
 
-  // ----- 3D Background (optimized) -----
+  // 3D Background (same as before, kept minimal)
   const container = document.getElementById('canvas-container');
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x050510);
@@ -284,24 +162,23 @@
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(window.devicePixelRatio);
   container.appendChild(renderer.domElement);
-  const geometry = new THREE.TorusKnotGeometry(1.8, 0.35, 300, 64, 3, 4);
-  const material = new THREE.MeshStandardMaterial({ color: 0x3a86ff, emissive: 0x1a44aa, emissiveIntensity: 0.6, metalness: 0.8, roughness: 0.2, transparent: true, opacity: 0.95 });
-  const knot = new THREE.Mesh(geometry, material);
+  const knotGeo = new THREE.TorusKnotGeometry(1.8, 0.35, 300, 64, 3, 4);
+  const knotMat = new THREE.MeshStandardMaterial({ color: 0x3a86ff, emissive: 0x1a44aa, emissiveIntensity: 0.6, metalness: 0.8, roughness: 0.2, transparent: true, opacity: 0.95 });
+  const knot = new THREE.Mesh(knotGeo, knotMat);
   scene.add(knot);
   const wireMat = new THREE.MeshBasicMaterial({ color: 0x88aaff, wireframe: true, transparent: true, opacity: 0.2 });
-  const knotWire = new THREE.Mesh(geometry, wireMat);
+  const knotWire = new THREE.Mesh(knotGeo, wireMat);
   scene.add(knotWire);
-  // particles
   const particleCount = 1200;
-  const particlesGeometry = new THREE.BufferGeometry();
+  const particlesGeo = new THREE.BufferGeometry();
   const posArray = new Float32Array(particleCount * 3);
-  for (let i = 0; i < particleCount; i++) { const radius = 6 + Math.random() * 6; const theta = Math.random() * Math.PI * 2; const phi = Math.acos(2 * Math.random() - 1); posArray[i*3] = radius * Math.sin(phi) * Math.cos(theta); posArray[i*3+1] = radius * Math.sin(phi) * Math.sin(theta) * 0.8; posArray[i*3+2] = radius * Math.cos(phi); }
-  particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+  for (let i = 0; i < particleCount; i++) { const r = 6 + Math.random() * 6; const theta = Math.random() * Math.PI * 2; const phi = Math.acos(2 * Math.random() - 1); posArray[i*3] = r * Math.sin(phi) * Math.cos(theta); posArray[i*3+1] = r * Math.sin(phi) * Math.sin(theta) * 0.8; posArray[i*3+2] = r * Math.cos(phi); }
+  particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
   const particleMat = new THREE.PointsMaterial({ color: 0xaaccff, size: 0.05, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending });
-  const particles = new THREE.Points(particlesGeometry, particleMat);
+  const particles = new THREE.Points(particlesGeo, particleMat);
   scene.add(particles);
-  const ambientLight = new THREE.AmbientLight(0x222222);
-  scene.add(ambientLight);
+  const ambient = new THREE.AmbientLight(0x222222);
+  scene.add(ambient);
   const mainLight = new THREE.DirectionalLight(0xffffff, 1.2);
   mainLight.position.set(2, 3, 4);
   scene.add(mainLight);
@@ -317,7 +194,7 @@
   const stars = new THREE.Points(starGeo, starMat);
   scene.add(stars);
   let mouseX = 0, mouseY = 0;
-  document.addEventListener('mousemove', (event) => { mouseX = (event.clientX / window.innerWidth) * 2 - 1; mouseY = (event.clientY / window.innerHeight) * 2 - 1; });
+  document.addEventListener('mousemove', (e) => { mouseX = (e.clientX / window.innerWidth) * 2 - 1; mouseY = (e.clientY / window.innerHeight) * 2 - 1; });
   let time = 0;
   function animate() {
     requestAnimationFrame(animate);
@@ -337,149 +214,137 @@
   animate();
   window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
 
-  // Demo products fallback
-  const demoProducts = [
-    { name: "Neural Frame", price: "$489", desc: "Adaptive display that responds to ambient cognition.", specs: "OLED, edge AI, 5G", icon: "fa-microchip", shortDesc: "Adaptive display, AI-driven.", image: "" },
-    { name: "Aether Pods", price: "$279", desc: "Spatial audio with haptic resonance.", specs: "40mm drivers, 30h battery", icon: "fa-waveform", shortDesc: "Spatial audio", image: "" },
-    { name: "Kernel One", price: "$1,249", desc: "Modular computing core.", specs: "16-core CPU, 32GB RAM", icon: "fa-cube", shortDesc: "Modular core", image: "" }
-  ];
+  // Helper functions
+  let currentWishlist = [];
+  let userId = localStorage.getItem('wishlist_user_id');
+  if (!userId) { userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8); localStorage.setItem('wishlist_user_id', userId); }
 
   function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
-  function showToast(message) { const toast = document.getElementById('toast-message'); toast.textContent = message; toast.style.opacity = '1'; setTimeout(() => toast.style.opacity = '0', 3000); }
+  function showToast(msg) { const toast = document.getElementById('toast-message'); toast.textContent = msg; toast.style.opacity = '1'; setTimeout(() => toast.style.opacity = '0', 3000); }
 
-  function createProductCard(product, isBestSeller = false) {
-    const hasImage = product.image && product.image.trim() !== '';
-    const icon = product.icon || 'fa-microchip';
-    const shortDesc = product.shortDesc || (product.desc ? product.desc.substring(0, 60) : '');
-    return `
-      <div class="product-card rounded-3xl p-6 md:p-8" data-product='${JSON.stringify(product)}'>
-        ${isBestSeller ? '<div class="best-seller-badge">🏆 BEST SELLER</div>' : ''}
-        ${hasImage ? `<img src="${escapeHtml(product.image)}" class="card-image" alt="${escapeHtml(product.name)}">` : `<div class="w-full h-56 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center text-7xl mb-6"><i class="fas ${icon} text-white/50"></i></div>`}
-        <h3 class="text-2xl font-bold tracking-tight text-white">${escapeHtml(product.name)}</h3>
-        <p class="text-white/60 mt-2 text-sm">${escapeHtml(shortDesc)}</p>
-        <div class="mt-5 flex justify-between items-center gap-2 flex-wrap">
-          <span class="font-semibold text-lg">${escapeHtml(product.price)}</span>
-          <div class="flex gap-2">
-            <a href="#" class="learn-more-btn text-sm uppercase border-b border-white/40 pb-0.5 hover:border-white transition-all">Details →</a>
-            <button class="order-now-btn order-btn text-sm px-3 py-1 rounded-full">Order now</button>
-            <button class="wishlist-add-btn wishlist-btn text-sm px-3 py-1 rounded-full"><i class="far fa-heart"></i></button>
+  async function loadProducts() {
+    const snapshot = await getDocs(collection(db, 'products'));
+    const products = [];
+    snapshot.forEach(doc => products.push({ id: doc.id, ...doc.data() }));
+    const best = products.slice(0, 3);
+    const other = products.slice(3);
+    const renderCard = (p, isBest) => {
+      const hasImage = p.image && p.image.trim();
+      return `
+        <div class="product-card rounded-3xl p-6 md:p-8" data-product='${JSON.stringify(p)}'>
+          ${isBest ? '<div class="best-seller-badge">🏆 BEST SELLER</div>' : ''}
+          ${hasImage ? `<img src="${escapeHtml(p.image)}" class="card-image" alt="${escapeHtml(p.name)}">` : `<div class="w-full h-56 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center text-7xl mb-6"><i class="fas ${p.icon || 'fa-microchip'} text-white/50"></i></div>`}
+          <h3 class="text-2xl font-bold tracking-tight text-white">${escapeHtml(p.name)}</h3>
+          <p class="text-white/60 mt-2 text-sm">${escapeHtml(p.desc?.substring(0,60))}</p>
+          <div class="mt-5 flex justify-between items-center gap-2 flex-wrap">
+            <span class="font-semibold text-lg">${escapeHtml(p.price)}</span>
+            <div class="flex gap-2">
+              <a href="#" class="learn-more-btn text-sm uppercase border-b border-white/40 pb-0.5 hover:border-white transition-all">Details →</a>
+              <button class="order-now-btn order-btn text-sm px-3 py-1 rounded-full">Order</button>
+              <button class="wishlist-add-btn wishlist-btn text-sm px-3 py-1 rounded-full"><i class="far fa-heart"></i></button>
+            </div>
           </div>
         </div>
-      </div>
-    `;
+      `;
+    };
+    document.getElementById('best-selling-grid').innerHTML = best.map(p => renderCard(p, true)).join('');
+    document.getElementById('other-collection-grid').innerHTML = other.map(p => renderCard(p, false)).join('');
+    document.getElementById('all-products-grid').innerHTML = products.map(p => renderCard(p, false)).join('');
+    attachEvents();
   }
 
-  function attachProductEvents() {
-    document.querySelectorAll('.learn-more-btn').forEach(btn => { btn.removeEventListener('click', modalClickHandler); btn.addEventListener('click', modalClickHandler); });
-    document.querySelectorAll('.order-now-btn').forEach(btn => { btn.removeEventListener('click', orderClickHandler); btn.addEventListener('click', orderClickHandler); });
-    document.querySelectorAll('.wishlist-add-btn').forEach(btn => { btn.removeEventListener('click', wishlistClickHandler); btn.addEventListener('click', wishlistClickHandler); });
-  }
-  function modalClickHandler(e) { e.preventDefault(); const card = e.currentTarget.closest('.product-card'); if (card) openModal(JSON.parse(card.getAttribute('data-product'))); }
-  function orderClickHandler(e) { e.stopPropagation(); const card = e.currentTarget.closest('.product-card'); if (card) openCheckout(JSON.parse(card.getAttribute('data-product'))); }
-  function wishlistClickHandler(e) { e.stopPropagation(); const card = e.currentTarget.closest('.product-card'); if (card) addToWishlist(JSON.parse(card.getAttribute('data-product'))); }
-
-  async function loadAllProducts() {
-    let products = [];
-    try {
-      const snapshot = await getDocs(collection(db, 'products'));
-      snapshot.forEach(doc => products.push({ id: doc.id, ...doc.data() }));
-      if (products.length === 0) products = demoProducts;
-    } catch(e) { products = demoProducts; }
-    products = products.map(p => ({ ...p, shortDesc: p.shortDesc || (p.desc ? p.desc.substring(0,60) : ''), icon: p.icon || 'fa-microchip' }));
-    document.getElementById('best-selling-grid').innerHTML = products.slice(0,3).map(p => createProductCard(p, true)).join('');
-    document.getElementById('other-collection-grid').innerHTML = products.slice(3).map(p => createProductCard(p, false)).join('');
-    document.getElementById('all-products-grid').innerHTML = products.map(p => createProductCard(p, false)).join('');
-    attachProductEvents();
+  function attachEvents() {
+    document.querySelectorAll('.learn-more-btn').forEach(btn => btn.addEventListener('click', (e) => { e.preventDefault(); const card = btn.closest('.product-card'); openModal(JSON.parse(card.getAttribute('data-product'))); }));
+    document.querySelectorAll('.order-now-btn').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); const card = btn.closest('.product-card'); openCheckout(JSON.parse(card.getAttribute('data-product'))); }));
+    document.querySelectorAll('.wishlist-add-btn').forEach(btn => btn.addEventListener('click', async (e) => { e.stopPropagation(); const card = btn.closest('.product-card'); const prod = JSON.parse(card.getAttribute('data-product')); await addToWishlist(prod); }));
   }
 
-  // ----- Website Settings (load and apply) -----
-  async function loadWebsiteSettings() {
-    const docRef = doc(db, 'settings', 'website');
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      const s = docSnap.data();
-      // hero
-      document.getElementById('hero-title').innerHTML = `${s.heroTitleLine1 || 'MaaZ'}<br>${s.heroTitleLine2 || 'visions.'}`;
-      document.getElementById('hero-tagline').innerText = s.heroTagline || 'Where minimalism meets in designed to reshape perception.';
-      document.getElementById('hero-btn').innerHTML = `${s.heroBtnText || 'Explore collection'} → <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>`;
-      // bestsellers
-      document.getElementById('bestsellers-title').innerText = s.bestSellersTitle || 'Best Sellers';
-      document.getElementById('bestsellers-subtitle').innerText = s.bestSellersSubtitle || 'Most loved by our community';
-      // other collection
-      document.getElementById('other-title').innerText = s.otherTitle || 'Other Collection';
-      document.getElementById('other-subtitle').innerText = s.otherSubtitle || 'Discover more signature artefacts';
-      // philosophy
-      document.getElementById('philosophy-title').innerText = s.philosophyTitle || 'Design as a dialogue.';
-      document.getElementById('philosophy-desc').innerText = s.philosophyDesc || 'Every Maaz product merges tactile elegance with invisible technology.';
-      document.getElementById('pillar1-title').innerText = s.pillar1Title || 'Precision';
-      document.getElementById('pillar1-desc').innerText = s.pillar1Desc || 'Crafted with obsessive attention.';
-      document.getElementById('pillar2-title').innerText = s.pillar2Title || 'Simplicity';
-      document.getElementById('pillar2-desc').innerText = s.pillar2Desc || 'Removing the unnecessary.';
-      document.getElementById('pillar3-title').innerText = s.pillar3Title || 'Evolution';
-      document.getElementById('pillar3-desc').innerText = s.pillar3Desc || 'Constant refinement.';
-      // contact
-      document.getElementById('contact-heading').innerHTML = s.contactHeading || 'Shape the future<span class="text-white/40">.</span>';
-      document.getElementById('contact-address-text').innerText = s.contactAddress || 'San Francisco, CA';
-      document.getElementById('contact-email-text').innerText = s.contactEmail || 'hello@maaz.studio';
-      document.getElementById('social-instagram-link').innerText = s.socialInstagramHandle || '@maaz.studio';
-      document.getElementById('social-instagram').href = s.socialInstagram || '#';
-      document.getElementById('social-twitter').href = s.socialTwitter || '#';
-      document.getElementById('social-linkedin').href = s.socialLinkedin || '#';
-      document.getElementById('footer-text').innerText = s.footerText || '© 2026 Maaz — designed to reshape perception.';
+  async function addToWishlist(product) {
+    const q = query(collection(db, 'wishlists'), where('userId', '==', userId), where('productId', '==', product.id || product.name));
+    const existing = await getDocs(q);
+    if (!existing.empty) { showToast("Already in wishlist"); return; }
+    await addDoc(collection(db, 'wishlists'), { userId, productId: product.id || product.name, product, addedAt: serverTimestamp() });
+    showToast(`❤️ Added "${product.name}" to wishlist`);
+    loadWishlistPage();
+  }
+  async function loadWishlistPage() {
+    const q = query(collection(db, 'wishlists'), where('userId', '==', userId));
+    const snapshot = await getDocs(q);
+    const items = [];
+    snapshot.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
+    const container = document.getElementById('wishlist-items-container');
+    const emptyMsg = document.getElementById('empty-wishlist');
+    if (!items.length) { container.innerHTML = ''; emptyMsg.classList.remove('hidden'); return; }
+    emptyMsg.classList.add('hidden');
+    container.innerHTML = items.map(item => `<div class="wishlist-item p-4 bg-white/5 rounded-xl flex justify-between"><div><h3 class="font-bold">${escapeHtml(item.product.name)}</h3><p>${escapeHtml(item.product.price)}</p></div><button class="order-from-wishlist bg-blue-600 px-3 py-1 rounded" data-prod='${JSON.stringify(item.product)}'>Order</button><button class="remove-wishlist bg-red-600 px-3 py-1 rounded ml-2" data-id="${item.id}">Remove</button></div>`).join('');
+    document.querySelectorAll('.order-from-wishlist').forEach(btn => btn.onclick = () => openCheckout(JSON.parse(btn.getAttribute('data-prod'))));
+    document.querySelectorAll('.remove-wishlist').forEach(async btn => { btn.onclick = async () => { await deleteDoc(doc(db, 'wishlists', btn.getAttribute('data-id'))); loadWishlistPage(); }; });
+  }
+
+  function openModal(product) {
+    document.getElementById('modal-title').innerText = product.name;
+    document.getElementById('modal-price').innerText = product.price;
+    document.getElementById('modal-desc').innerText = product.desc || 'No description.';
+    document.getElementById('modal-specs').innerText = product.specs || 'Standard.';
+    const gallery = document.getElementById('modal-media-gallery');
+    gallery.innerHTML = '';
+    const allImages = [product.image, ...(product.images || [])].filter(Boolean);
+    if (allImages.length) {
+      const swiperDiv = document.createElement('div');
+      swiperDiv.className = 'swiper';
+      const wrapper = document.createElement('div');
+      wrapper.className = 'swiper-wrapper';
+      allImages.forEach(img => { const slide = document.createElement('div'); slide.className = 'swiper-slide'; slide.innerHTML = `<img src="${img}" class="w-full h-full object-cover">`; wrapper.appendChild(slide); });
+      swiperDiv.appendChild(wrapper);
+      const nextBtn = document.createElement('div'); nextBtn.className = 'swiper-button-next';
+      const prevBtn = document.createElement('div'); prevBtn.className = 'swiper-button-prev';
+      swiperDiv.appendChild(nextBtn); swiperDiv.appendChild(prevBtn);
+      gallery.appendChild(swiperDiv);
+      new Swiper(swiperDiv, { navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }, loop: true });
     }
+    if (product.videoUrl) {
+      let videoHtml = '';
+      if (product.videoUrl.includes('youtube.com') || product.videoUrl.includes('youtu.be')) {
+        let vidId = product.videoUrl.split('v=')[1]?.split('&')[0] || product.videoUrl.split('/').pop();
+        videoHtml = `<div class="video-container"><iframe src="https://www.youtube.com/embed/${vidId}" allowfullscreen></iframe></div>`;
+      } else if (product.videoUrl.includes('vimeo')) {
+        let vidId = product.videoUrl.split('/').pop();
+        videoHtml = `<div class="video-container"><iframe src="https://player.vimeo.com/video/${vidId}" allowfullscreen></iframe></div>`;
+      } else {
+        videoHtml = `<video controls class="w-full rounded-xl"><source src="${product.videoUrl}" type="video/mp4"></video>`;
+      }
+      gallery.innerHTML += videoHtml;
+    }
+    document.getElementById('modal-order-btn').onclick = () => { openCheckout(product); document.getElementById('product-modal').style.display = 'none'; };
+    document.getElementById('modal-wishlist-btn').onclick = async () => { await addToWishlist(product); };
+    document.getElementById('product-modal').style.display = 'flex';
   }
-
-  // --- Wishlist functions (same as before) ---
-  async function loadWishlist() { const q = query(collection(db, 'wishlists'), where('userId', '==', userId)); const snapshot = await getDocs(q); currentWishlist = []; snapshot.forEach(doc => currentWishlist.push({ id: doc.id, ...doc.data() })); return currentWishlist; }
-  async function addToWishlist(product) { if (currentWishlist.find(item => item.productId === (product.id || product.name))) { showToast("Already in wishlist"); return; } await addDoc(collection(db, 'wishlists'), { userId, productId: product.id || product.name, product, addedAt: serverTimestamp() }); showToast(`❤️ Added "${product.name}" to wishlist`); if (document.getElementById('wishlist-page').classList.contains('active')) renderWishlistPage(); await loadWishlist(); }
-  async function removeFromWishlist(itemId) { await deleteDoc(doc(db, 'wishlists', itemId)); showToast("Removed from wishlist"); if (document.getElementById('wishlist-page').classList.contains('active')) renderWishlistPage(); await loadWishlist(); }
-  async function renderWishlistPage() { const items = await loadWishlist(); const container = document.getElementById('wishlist-items-container'); const emptyMsg = document.getElementById('empty-wishlist'); if (!items.length) { container.innerHTML = ''; emptyMsg.classList.remove('hidden'); return; } emptyMsg.classList.add('hidden'); container.innerHTML = items.map(item => `<div class="wishlist-item p-4 bg-white/5 rounded-xl flex justify-between items-center"><div><h3 class="font-bold">${escapeHtml(item.product.name)}</h3><p class="text-sm text-white/60">${escapeHtml(item.product.price)}</p></div><div class="flex gap-2"><button class="order-from-wishlist bg-blue-600 px-3 py-1 rounded-lg text-sm" data-product='${JSON.stringify(item.product)}'>Order</button><button class="remove-wishlist bg-red-600 px-3 py-1 rounded-lg text-sm" data-id="${item.id}">Remove</button></div></div>`).join(''); document.querySelectorAll('.order-from-wishlist').forEach(btn => btn.onclick = () => openCheckout(JSON.parse(btn.getAttribute('data-product')))); document.querySelectorAll('.remove-wishlist').forEach(btn => btn.onclick = async () => { await removeFromWishlist(btn.getAttribute('data-id')); renderWishlistPage(); }); }
-
-  // --- Orders lookup for customers & checkout ---
-  async function lookupOrdersByEmail(email) { const q = query(collection(db, 'orders'), where('customer.email', '==', email)); const snapshot = await getDocs(q); const orders = []; snapshot.forEach(doc => orders.push({ id: doc.id, ...doc.data() })); const container = document.getElementById('orders-list'); const noOrders = document.getElementById('no-orders'); if (!orders.length) { container.innerHTML = ''; noOrders.classList.remove('hidden'); return; } noOrders.classList.add('hidden'); container.innerHTML = orders.map(order => `<div class="order-card"><div class="flex justify-between"><span class="font-bold">${escapeHtml(order.product.name)}</span><span class="text-green-400">${order.status || 'pending'}</span></div><div class="text-sm text-white/60">Price: ${order.product.price} | Qty: 1</div><div class="text-xs text-white/40 mt-2">Order ID: ${order.orderId || order.id}</div></div>`).join(''); }
-
-  function openCheckout(product) { selectedProductForCheckout = product; document.getElementById('checkout-product-info').innerHTML = `<strong>${product.name}</strong> - ${product.price}`; document.getElementById('checkout-modal').style.display = 'flex'; }
-  function openModal(product) { document.getElementById('modal-title').innerText = product.name; document.getElementById('modal-price').innerText = product.price; document.getElementById('modal-desc').innerText = product.desc || 'No description available.'; document.getElementById('modal-specs').innerText = product.specs || 'Standard specifications apply.'; document.getElementById('modal-icon').innerHTML = `<i class="fas ${product.icon || 'fa-microchip'} text-5xl text-white/70"></i>`; document.getElementById('modal-order-btn').onclick = () => { openCheckout(product); document.getElementById('product-modal').style.display = 'none'; }; document.getElementById('modal-wishlist-btn').onclick = () => addToWishlist(product); document.getElementById('product-modal').style.display = 'flex'; }
-
-  // Checkout form submission
-  document.getElementById('checkout-form').addEventListener('submit', async (e) => {
-    e.preventDefault(); const name = document.getElementById('checkout-name').value.trim(); const email = document.getElementById('checkout-email').value.trim(); const phone = document.getElementById('checkout-phone').value.trim(); const address = document.getElementById('checkout-address').value.trim(); const payment = document.getElementById('checkout-payment').value; if (!name || !email || !phone || !address || !payment) return showToast("Please fill all fields"); if (!selectedProductForCheckout) return; const orderData = { product: selectedProductForCheckout, customer: { name, email, phone, address, paymentMethod: payment }, status: "pending", createdAt: serverTimestamp(), orderId: Date.now().toString() }; try { await addDoc(collection(db, 'orders'), orderData); document.getElementById('order-feedback').textContent = "✓ Order placed! We'll contact you soon."; document.getElementById('order-feedback').classList.remove('hidden'); setTimeout(() => { document.getElementById('checkout-modal').style.display = 'none'; document.getElementById('order-feedback').classList.add('hidden'); document.getElementById('checkout-form').reset(); selectedProductForCheckout = null; showToast("🎉 Order confirmed! Thank you."); }, 2000); } catch (err) { showToast("Error: " + err.message); }
-  });
-
-  // Orders lookup
-  document.getElementById('lookup-orders').onclick = () => { const email = document.getElementById('order-email').value.trim(); if (!email) showToast("Please enter your email"); else lookupOrdersByEmail(email); };
-
-  // Page routing
-  const pages = { home: document.getElementById('home-page'), products: document.getElementById('products-page'), philosophy: document.getElementById('philosophy-page'), contact: document.getElementById('contact-page'), wishlist: document.getElementById('wishlist-page'), orders: document.getElementById('orders-page') };
-  function showPage(pageId) { Object.values(pages).forEach(p => p.classList.remove('active')); if (pages[pageId]) pages[pageId].classList.add('active'); document.querySelectorAll('.page-link').forEach(link => { if (link.getAttribute('data-page') === pageId) link.classList.add('active'); else link.classList.remove('active'); }); history.pushState(null, '', `#${pageId}`); ScrollTrigger.refresh(); if (pageId === 'wishlist') renderWishlistPage(); }
-  document.querySelectorAll('.page-link').forEach(link => link.addEventListener('click', (e) => { e.preventDefault(); const page = link.getAttribute('data-page'); if (page && pages[page]) { showPage(page); window.scrollTo({ top: 0, behavior: 'smooth' }); document.getElementById('mobile-menu').style.display = 'none'; } }));
-  window.addEventListener('load', () => { let hash = window.location.hash.slice(1); (hash && pages[hash]) ? showPage(hash) : showPage('home'); loadAllProducts(); loadWebsiteSettings(); loadWishlist(); });
-  window.addEventListener('popstate', () => { let hash = window.location.hash.slice(1); (hash && pages[hash]) ? showPage(hash) : showPage('home'); });
-
-  // Mobile menu toggle
+  function openCheckout(product) {
+    selectedProductForCheckout = product;
+    document.getElementById('checkout-product-info').innerHTML = `<strong>${product.name}</strong> - ${product.price}`;
+    document.getElementById('checkout-modal').style.display = 'flex';
+  }
+  let selectedProductForCheckout = null;
+  document.getElementById('checkout-form').addEventListener('submit', async (e) => { e.preventDefault(); const name = document.getElementById('checkout-name').value; const email = document.getElementById('checkout-email').value; const phone = document.getElementById('checkout-phone').value; const address = document.getElementById('checkout-address').value; const payment = document.getElementById('checkout-payment').value; if (!name || !email || !phone || !address) { showToast("Fill all fields"); return; } try { await addDoc(collection(db, 'orders'), { product: selectedProductForCheckout, customer: { name, email, phone, address, paymentMethod: payment }, status: 'pending', createdAt: serverTimestamp(), orderId: Date.now().toString() }); document.getElementById('order-feedback').textContent = "Order placed!"; document.getElementById('order-feedback').classList.remove('hidden'); setTimeout(() => { document.getElementById('checkout-modal').style.display = 'none'; document.getElementById('order-feedback').classList.add('hidden'); document.getElementById('checkout-form').reset(); showToast("Order confirmed!"); }, 1500); } catch(err) { showToast("Error: "+err.message); } });
+  document.getElementById('lookup-orders').onclick = async () => { const email = document.getElementById('order-email').value; if (!email) return; const q = query(collection(db, 'orders'), where('customer.email', '==', email)); const snap = await getDocs(q); const orders = []; snap.forEach(d => orders.push(d.data())); const container = document.getElementById('orders-list'); const no = document.getElementById('no-orders'); if (!orders.length) { container.innerHTML = ''; no.classList.remove('hidden'); return; } no.classList.add('hidden'); container.innerHTML = orders.map(o => `<div class="bg-white/10 p-3 rounded mb-2">${o.product.name} - ${o.product.price}<br>Status: ${o.status}</div>`).join(''); };
+  // Routing (same as before)
+  const pages = {
+    home: document.getElementById('home-page'), products: document.getElementById('products-page'), philosophy: document.getElementById('philosophy-page'), contact: document.getElementById('contact-page'), wishlist: document.getElementById('wishlist-page'), orders: document.getElementById('orders-page')
+  };
+  function showPage(id) { Object.values(pages).forEach(p => p.classList.remove('active')); if (pages[id]) pages[id].classList.add('active'); document.querySelectorAll('.page-link').forEach(link => { if (link.getAttribute('data-page') === id) link.classList.add('active'); else link.classList.remove('active'); }); history.pushState(null, '', `#${id}`); if (id === 'wishlist') loadWishlistPage(); ScrollTrigger.refresh(); }
+  document.querySelectorAll('.page-link').forEach(link => link.addEventListener('click', (e) => { e.preventDefault(); const id = link.getAttribute('data-page'); if (id && pages[id]) { showPage(id); window.scrollTo(0,0); document.getElementById('mobile-menu').style.display = 'none'; } }));
+  window.addEventListener('load', () => { const hash = location.hash.slice(1); (hash && pages[hash]) ? showPage(hash) : showPage('home'); loadProducts(); });
+  window.addEventListener('popstate', () => { const hash = location.hash.slice(1); (hash && pages[hash]) ? showPage(hash) : showPage('home'); });
   document.getElementById('menu-toggle').addEventListener('click', () => { const mm = document.getElementById('mobile-menu'); mm.style.display = mm.style.display === 'flex' ? 'none' : 'flex'; });
-
-  // Contact form
-  document.getElementById('contact-form').addEventListener('submit', (e) => { e.preventDefault(); document.getElementById('form-feedback').classList.remove('hidden'); setTimeout(() => document.getElementById('form-feedback').classList.add('hidden'), 3000); e.target.reset(); showToast("📬 Message sent (demo)"); });
-  document.getElementById('newsletter-btn').addEventListener('click', () => { const email = document.getElementById('newsletter-email').value; if (email) { document.getElementById('newsletter-feedback').classList.remove('hidden'); setTimeout(() => document.getElementById('newsletter-feedback').classList.add('hidden'), 2000); showToast(`📧 Subscribed with ${email}`); } else showToast("Please enter an email"); });
-
-  // Navbar scroll effect
-  window.addEventListener('scroll', () => { const nav = document.querySelector('nav'); if (window.scrollY > 60) nav.classList.add('bg-black/60', 'backdrop-blur-xl'), nav.classList.remove('bg-black/30'); else nav.classList.remove('bg-black/60'), nav.classList.add('bg-black/30'); });
-
-  // Custom cursor
+  document.getElementById('contact-form')?.addEventListener('submit', (e) => { e.preventDefault(); document.getElementById('form-feedback').classList.remove('hidden'); setTimeout(() => document.getElementById('form-feedback').classList.add('hidden'), 2000); e.target.reset(); showToast("Message sent (demo)"); });
   const cursor = document.querySelector('.custom-cursor'), cursorDot = document.querySelector('.cursor-dot');
-  if (cursor && cursorDot) { let mouseX = 0, mouseY = 0, cursorX = 0, cursorY = 0, dotX = 0, dotY = 0; document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; }); function animateCursor() { cursorX += (mouseX - cursorX) * 0.12; cursorY += (mouseY - cursorY) * 0.12; dotX += (mouseX - dotX) * 0.25; dotY += (mouseY - dotY) * 0.25; cursor.style.transform = `translate(${cursorX}px, ${cursorY}px) translate(-50%, -50%)`; cursorDot.style.transform = `translate(${dotX}px, ${dotY}px) translate(-50%, -50%)`; requestAnimationFrame(animateCursor); } animateCursor(); document.querySelectorAll('a, button, .product-card, .nav-link').forEach(el => { el.addEventListener('mouseenter', () => { cursor.style.width = '56px'; cursor.style.height = '56px'; cursor.style.background = 'rgba(255,255,255,0.2)'; cursor.style.borderColor = 'rgba(255,255,255,0.9)'; cursorDot.style.transform = 'scale(1.6)'; }); el.addEventListener('mouseleave', () => { cursor.style.width = '32px'; cursor.style.height = '32px'; cursor.style.background = 'rgba(255,255,255,0.15)'; cursor.style.borderColor = 'rgba(255,255,255,0.6)'; cursorDot.style.transform = 'scale(1)'; }); }); document.body.style.cursor = 'none'; }
-
-  // Close modals
-  const productModal = document.getElementById('product-modal'), checkoutModal = document.getElementById('checkout-modal');
-  document.querySelectorAll('.close-modal, .close-checkout').forEach(btn => btn.addEventListener('click', () => { productModal.style.display = 'none'; checkoutModal.style.display = 'none'; }));
-  window.addEventListener('click', (e) => { if (e.target === productModal) productModal.style.display = 'none'; if (e.target === checkoutModal) checkoutModal.style.display = 'none'; });
-
-  // GSAP hero
-  gsap.from('.hero-content h1', { opacity: 0, y: 50, duration: 1, ease: 'power4.out' });
-  gsap.from('.hero-content p', { opacity: 0, y: 30, duration: 0.8, delay: 0.3 });
-  gsap.from('.hero-content .mt-12', { opacity: 0, y: 20, delay: 0.5 });
-  gsap.from('.nav-link', { opacity: 0, y: -20, stagger: 0.05, duration: 0.5, delay: 0.2 });
+  if (cursor && cursorDot) { let mx=0,my=0,cx=0,cy=0,dx=0,dy=0; document.addEventListener('mousemove', (e) => { mx = e.clientX; my = e.clientY; }); function animCursor() { cx += (mx - cx)*0.12; cy += (my - cy)*0.12; dx += (mx - dx)*0.25; dy += (my - dy)*0.25; cursor.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`; cursorDot.style.transform = `translate(${dx}px, ${dy}px) translate(-50%, -50%)`; requestAnimationFrame(animCursor); } animCursor(); document.querySelectorAll('a, button, .product-card').forEach(el => el.addEventListener('mouseenter', () => { cursor.style.width = '56px'; cursor.style.height = '56px'; cursor.style.background = 'rgba(255,255,255,0.2)'; cursorDot.style.transform = 'scale(1.6)'; })); document.querySelectorAll('a, button, .product-card').forEach(el => el.addEventListener('mouseleave', () => { cursor.style.width = '32px'; cursor.style.height = '32px'; cursor.style.background = 'rgba(255,255,255,0.15)'; cursorDot.style.transform = 'scale(1)'; })); document.body.style.cursor = 'none'; }
+  const modal = document.getElementById('product-modal'), checkoutModal = document.getElementById('checkout-modal');
+  document.querySelectorAll('.close-modal, .close-checkout').forEach(btn => btn.addEventListener('click', () => { modal.style.display = 'none'; checkoutModal.style.display = 'none'; }));
+  window.addEventListener('click', (e) => { if(e.target === modal) modal.style.display = 'none'; if(e.target === checkoutModal) checkoutModal.style.display = 'none'; });
+  gsap.from('.hero-content h1', { opacity:0, y:50, duration:1, ease:'power4.out' });
+  gsap.from('.hero-content p', { opacity:0, y:30, duration:0.8, delay:0.3 });
+  gsap.from('.hero-content .mt-12', { opacity:0, y:20, delay:0.5 });
 </script>
 </body>
 </html>
